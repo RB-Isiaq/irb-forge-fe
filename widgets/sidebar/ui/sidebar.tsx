@@ -8,9 +8,9 @@ import { Avatar } from "@/entities/user/ui/avatar";
 import { useAuth } from "@/entities/user";
 
 const navItems = [
-  { label: "Dashboard",     href: "/dashboard", icon: LayoutDashboard },
-  { label: "Organizations", href: "/orgs",      icon: Building2 },
-  { label: "Invitations",   href: "/invitations", icon: Bell },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Organizations", href: "/orgs", icon: Building2 },
+  { label: "Invitations", href: "/invitations", icon: Bell },
 ] as const;
 
 export function Sidebar() {
@@ -30,10 +30,16 @@ export function Sidebar() {
         {navItems.map(({ label, href, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
-            <Link key={href} href={href} className={cn(
-              "flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium transition-colors duration-100",
-              active ? "bg-primary/10 text-primary" : "text-text-secondary hover:bg-gray-100 hover:text-text-primary"
-            )}>
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                "flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium transition-colors duration-100",
+                active
+                  ? "bg-primary/10 text-primary"
+                  : "text-text-secondary hover:bg-gray-100 hover:text-text-primary"
+              )}
+            >
               <Icon size={16} strokeWidth={active ? 2.2 : 1.8} />
               {label}
             </Link>
@@ -42,17 +48,25 @@ export function Sidebar() {
       </nav>
 
       <div className="shrink-0 border-t border-border p-3 space-y-0.5">
-        <Link href="/settings" className="flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium text-text-secondary hover:bg-gray-100 hover:text-text-primary transition-colors">
+        <Link
+          href="/settings"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium text-text-secondary hover:bg-gray-100 hover:text-text-primary transition-colors"
+        >
           <Settings size={16} strokeWidth={1.8} /> Settings
         </Link>
-        <button onClick={() => logout()} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium text-text-secondary hover:bg-gray-100 hover:text-text-primary transition-colors">
+        <button
+          onClick={() => logout()}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium text-text-secondary hover:bg-gray-100 hover:text-text-primary transition-colors"
+        >
           <LogOut size={16} strokeWidth={1.8} /> Sign out
         </button>
         {user && (
           <div className="flex items-center gap-2.5 px-3 pt-3 border-t border-border mt-1">
             <Avatar firstName={user.firstName} lastName={user.lastName} size="sm" />
             <div className="min-w-0">
-              <p className="text-[12px] font-medium text-text-primary truncate">{user.firstName} {user.lastName}</p>
+              <p className="text-[12px] font-medium text-text-primary truncate">
+                {user.firstName} {user.lastName}
+              </p>
               <p className="text-[11px] text-text-muted truncate">{user.email}</p>
             </div>
           </div>

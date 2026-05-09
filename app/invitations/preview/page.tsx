@@ -20,26 +20,42 @@ function InvitationPreviewContent() {
   const token = searchParams.get("token") ?? "";
 
   const [preview, setPreview] = useState<InvitationPreview | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  // Derive initial state from token — avoids synchronous setState inside effect
+  const [loading, setLoading] = useState(!!token);
+  const [error, setError] = useState(!token);
 
-  const accept  = useAcceptInvitation();
+  const accept = useAcceptInvitation();
   const decline = useDeclineInvitation();
 
   useEffect(() => {
-    if (!token) { setError(true); setLoading(false); return; }
-    invitationApi.preview(token).then(setPreview).catch(() => setError(true)).finally(() => setLoading(false));
+    if (!token) return;
+    invitationApi
+      .preview(token)
+      .then(setPreview)
+      .catch(() => setError(true))
+      .finally(() => setLoading(false));
   }, [token]);
 
-  if (loading) return <div className="flex items-center justify-center min-h-75"><PageSpinner /></div>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-75">
+        <PageSpinner />
+      </div>
+    );
 
   if (error || !preview) {
     return (
       <Card className="w-full max-w-100">
         <CardContent className="pt-6 text-center">
           <p className="text-[15px] font-medium text-text-primary mb-2">Invalid invitation</p>
-          <p className="text-[13px] text-text-muted mb-5">This link has expired, been used, or is invalid.</p>
-          <Link href="/dashboard"><Button variant="secondary" size="sm">Go to dashboard</Button></Link>
+          <p className="text-[13px] text-text-muted mb-5">
+            This link has expired, been used, or is invalid.
+          </p>
+          <Link href="/dashboard">
+            <Button variant="secondary" size="sm">
+              Go to dashboard
+            </Button>
+          </Link>
         </CardContent>
       </Card>
     );
@@ -52,29 +68,54 @@ function InvitationPreviewContent() {
           <Building2 size={26} className="text-primary" strokeWidth={1.8} />
         </div>
         <p className="text-[14px] text-text-muted mb-1">You&apos;ve been invited to join</p>
-        <h1 className="text-[22px] font-bold text-text-primary mb-1">{preview.organization.name}</h1>
-        {preview.organization.description && <p className="text-[13px] text-text-muted mb-3">{preview.organization.description}</p>}
+        <h1 className="text-[22px] font-bold text-text-primary mb-1">
+          {preview.organization.name}
+        </h1>
+        {preview.organization.description && (
+          <p className="text-[13px] text-text-muted mb-3">{preview.organization.description}</p>
+        )}
         <div className="flex items-center justify-center gap-2 mb-5">
           <span className="text-[13px] text-text-muted">Role:</span>
           <Badge variant="primary">{preview.role}</Badge>
         </div>
         <p className="text-[12px] text-text-muted mb-6">
-          Invited by <strong className="text-text-primary">{preview.invitedBy.firstName} {preview.invitedBy.lastName}</strong>
+          Invited by{" "}
+          <strong className="text-text-primary">
+            {preview.invitedBy.firstName} {preview.invitedBy.lastName}
+          </strong>
           {" · "}Expires {new Date(preview.expiresAt).toLocaleDateString()}
         </p>
         <div className="flex flex-col gap-2.5">
-          <Button size="lg" className="w-full" leftIcon={<UserCheck size={16} />} loading={accept.isPending}
+          <Button
+            size="lg"
+            className="w-full"
+            leftIcon={<UserCheck size={16} />}
+            loading={accept.isPending}
             onClick={() => {
-              if (!isAuthenticated) { router.push(`/login?redirect=/invitations/preview?token=${token}`); return; }
-              accept.mutate(token, { onSuccess: () => router.push(`/orgs/${preview.organization.slug}`) });
-            }}>
+              if (!isAuthenticated) {
+                router.push(`/login?redirect=/invitations/preview?token=${token}`);
+                return;
+              }
+              accept.mutate(token, {
+                onSuccess: () => router.push(`/orgs/${preview.organization.slug}`),
+              });
+            }}
+          >
             {isAuthenticated ? "Accept invitation" : "Sign in to accept"}
           </Button>
-          <Button variant="secondary" size="lg" className="w-full" loading={decline.isPending}
+          <Button
+            variant="secondary"
+            size="lg"
+            className="w-full"
+            loading={decline.isPending}
             onClick={() => {
-              if (!isAuthenticated) { router.push(`/login?redirect=/invitations/preview?token=${token}`); return; }
+              if (!isAuthenticated) {
+                router.push(`/login?redirect=/invitations/preview?token=${token}`);
+                return;
+              }
               decline.mutate(token, { onSuccess: () => router.push("/dashboard") });
-            }}>
+            }}
+          >
             Decline
           </Button>
         </div>
@@ -86,12 +127,12 @@ function InvitationPreviewContent() {
 export default function InvitationPreviewPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-bg">
-      <a href="/" className="mb-8 flex items-center gap-2.5">
+      <Link href="/" className="mb-8 flex items-center gap-2.5">
         <div className="h-8 w-8 rounded-sm bg-primary flex items-center justify-center">
           <span className="text-white font-bold text-[16px]">F</span>
         </div>
         <span className="text-[18px] font-bold text-text-primary">IRB Forge</span>
-      </a>
+      </Link>
       <Suspense fallback={<PageSpinner />}>
         <InvitationPreviewContent />
       </Suspense>

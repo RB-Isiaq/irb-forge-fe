@@ -10,8 +10,8 @@ import type { SendInvitationPayload } from "./types";
 export function useOrgInvitations(slug: string) {
   return useQuery({
     queryKey: queryKeys.invitations.byOrg(slug),
-    queryFn:  () => invitationApi.listPending(slug),
-    enabled:  !!slug,
+    queryFn: () => invitationApi.listPending(slug),
+    enabled: !!slug,
   });
 }
 
@@ -22,9 +22,9 @@ export function useMyInvitations() {
 export function useInvitationPreview(token: string) {
   return useQuery({
     queryKey: queryKeys.invitations.preview(token),
-    queryFn:  () => invitationApi.preview(token),
-    enabled:  !!token,
-    retry:    false,
+    queryFn: () => invitationApi.preview(token),
+    enabled: !!token,
+    retry: false,
   });
 }
 

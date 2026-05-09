@@ -39,10 +39,7 @@ export default function VerifyEmailPage() {
 
   function handlePaste(e: ClipboardEvent<HTMLInputElement>) {
     e.preventDefault();
-    const pasted = e.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
-      .slice(0, OTP_LENGTH);
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
     const next = [...digits];
     pasted.split("").forEach((char, i) => {
       next[i] = char;
@@ -89,15 +86,11 @@ export default function VerifyEmailPage() {
         <div className="mb-4 flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 mx-auto">
           <span className="text-[22px]">✉️</span>
         </div>
-        <h1 className="text-[22px] font-semibold text-text-primary mb-1">
-          Verify your email
-        </h1>
+        <h1 className="text-[22px] font-semibold text-text-primary mb-1">Verify your email</h1>
         <p className="text-[14px] text-text-muted mb-6">
           Enter the 6-digit code sent to{" "}
-          <strong className="text-text-primary">
-            {user?.email ?? "your email"}
-          </strong>
-          . It expires in 10 minutes.
+          <strong className="text-text-primary">{user?.email ?? "your email"}</strong>. It expires
+          in 10 minutes.
         </p>
 
         {/* OTP Input */}
@@ -121,18 +114,13 @@ export default function VerifyEmailPage() {
                 "text-center text-[22px] font-bold text-text-primary font-mono",
                 "outline-none transition-colors",
                 "focus:border-primary focus:ring-2 focus:ring-primary/15",
-                digit && "border-primary",
+                digit && "border-primary"
               )}
             />
           ))}
         </div>
 
-        <Button
-          size="lg"
-          className="w-full mb-4"
-          loading={loading}
-          onClick={handleVerify}
-        >
+        <Button size="lg" className="w-full mb-4" loading={loading} onClick={handleVerify}>
           Verify email
         </Button>
 

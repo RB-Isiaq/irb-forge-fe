@@ -60,4 +60,5 @@ Pattern: inner component uses the hook, outer page default export wraps it.
 The .default() modifier creates an optional input type that conflicts with react-hook-form's SubmitHandler.
 
 ## API
+
 NEXT_PUBLIC_API_URL in .env.local → defaults to http://localhost:3000/api

@@ -28,7 +28,11 @@ export function UnverifiedBanner() {
     <div className="bg-warning/10 border-b border-warning/20 px-4 py-2.5 flex items-center gap-3 text-[13px]">
       <AlertCircle size={15} className="text-warning shrink-0" />
       <p className="text-text-secondary">Your email is not verified. Some features are locked.</p>
-      <button onClick={resend} disabled={loading} className="ml-auto text-primary font-medium hover:underline disabled:opacity-50 shrink-0">
+      <button
+        onClick={resend}
+        disabled={loading}
+        className="ml-auto text-primary font-medium hover:underline disabled:opacity-50 shrink-0"
+      >
         {loading ? "Sending…" : "Resend code"}
       </button>
     </div>

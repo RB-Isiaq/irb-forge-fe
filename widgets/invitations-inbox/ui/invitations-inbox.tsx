@@ -11,7 +11,7 @@ import { useMyInvitations, useAcceptInvitation, useDeclineInvitation } from "@/e
 export function InvitationsInbox() {
   const router = useRouter();
   const { data: invitations, isLoading } = useMyInvitations();
-  const accept  = useAcceptInvitation();
+  const accept = useAcceptInvitation();
   const decline = useDeclineInvitation();
 
   if (isLoading) return <PageSpinner />;
@@ -35,19 +35,35 @@ export function InvitationsInbox() {
               <Building2 size={20} className="text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[14px] font-semibold text-text-primary">{inv.organization?.name ?? "Unknown organization"}</p>
+              <p className="text-[14px] font-semibold text-text-primary">
+                {inv.organization?.name ?? "Unknown organization"}
+              </p>
               <p className="text-[12px] text-text-muted">
-                Invited by {inv.invitedBy?.firstName} {inv.invitedBy?.lastName} · Expires {new Date(inv.expiresAt).toLocaleDateString()}
+                Invited by {inv.invitedBy?.firstName} {inv.invitedBy?.lastName} · Expires{" "}
+                {new Date(inv.expiresAt).toLocaleDateString()}
               </p>
             </div>
             <Badge variant="outline">{inv.role}</Badge>
             <div className="flex gap-2 shrink-0">
-              <Button size="sm" leftIcon={<Check size={13} />} loading={accept.isPending}
-                onClick={() => accept.mutate(inv.id, { onSuccess: () => router.push(`/orgs/${inv.organization?.slug ?? ""}`) })}>
+              <Button
+                size="sm"
+                leftIcon={<Check size={13} />}
+                loading={accept.isPending}
+                onClick={() =>
+                  accept.mutate(inv.id, {
+                    onSuccess: () => router.push(`/orgs/${inv.organization?.slug ?? ""}`),
+                  })
+                }
+              >
                 Accept
               </Button>
-              <Button size="sm" variant="secondary" leftIcon={<X size={13} />} loading={decline.isPending}
-                onClick={() => decline.mutate(inv.id)}>
+              <Button
+                size="sm"
+                variant="secondary"
+                leftIcon={<X size={13} />}
+                loading={decline.isPending}
+                onClick={() => decline.mutate(inv.id)}
+              >
                 Decline
               </Button>
             </div>

@@ -37,9 +37,23 @@ export interface LoginPayload {
   password: string;
 }
 
-export interface VerifyEmailPayload   { otp: string; }
-export interface ResendVerificationPayload { email: string; }
-export interface ForgotPasswordPayload     { email: string; }
-export interface ResetPasswordPayload      { token: string; password: string; }
-export interface ChangePasswordPayload     { currentPassword: string; newPassword: string; }
-export interface GoogleSignInPayload       { idToken: string; }
+export interface VerifyEmailPayload {
+  otp: string;
+}
+export interface ResendVerificationPayload {
+  email: string;
+}
+export interface ForgotPasswordPayload {
+  email: string;
+}
+export interface ResetPasswordPayload {
+  token: string;
+  password: string;
+}
+export interface ChangePasswordPayload {
+  currentPassword: string;
+  newPassword: string;
+}
+export interface GoogleSignInPayload {
+  idToken: string;
+}

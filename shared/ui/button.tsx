@@ -17,8 +17,7 @@ const variantClasses: Record<ButtonVariant, string> = {
     "bg-primary text-white hover:bg-primary-dark active:bg-primary-dark focus-visible:ring-2 focus-visible:ring-primary/40",
   secondary:
     "bg-surface text-text-secondary border border-border hover:bg-gray-100 active:bg-gray-100",
-  ghost:
-    "bg-transparent text-text-secondary hover:bg-gray-100 active:bg-gray-100",
+  ghost: "bg-transparent text-text-secondary hover:bg-gray-100 active:bg-gray-100",
   danger:
     "bg-error text-white hover:bg-red-700 active:bg-red-800 focus-visible:ring-2 focus-visible:ring-error/40",
 };
@@ -60,11 +59,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...props}
       >
-        {loading ? (
-          <Spinner size={size === "sm" ? 12 : 14} />
-        ) : (
-          leftIcon
-        )}
+        {loading ? <Spinner size={size === "sm" ? 12 : 14} /> : leftIcon}
         {children}
         {!loading && rightIcon}
       </button>
@@ -83,14 +78,7 @@ function Spinner({ size = 14 }: { size?: number }) {
       className="animate-spin"
       aria-hidden="true"
     >
-      <circle
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeOpacity="0.25"
-      />
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.25" />
       <path
         d="M12 2a10 10 0 0 1 10 10"
         stroke="currentColor"

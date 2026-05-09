@@ -7,18 +7,18 @@
 
 ## Stack
 
-| Concern | Technology |
-|---|---|
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript |
-| Styling | Tailwind CSS v4 |
-| Server state | TanStack Query v5 |
-| Client state | Zustand |
-| Forms | React Hook Form + Zod |
-| HTTP | Axios (with silent token refresh) |
-| Notifications | Sonner |
-| Icons | Lucide React |
-| Font | Inter (brand) + JetBrains Mono (code) |
+| Concern       | Technology                            |
+| ------------- | ------------------------------------- |
+| Framework     | Next.js 16 (App Router)               |
+| Language      | TypeScript                            |
+| Styling       | Tailwind CSS v4                       |
+| Server state  | TanStack Query v5                     |
+| Client state  | Zustand                               |
+| Forms         | React Hook Form + Zod                 |
+| HTTP          | Axios (with silent token refresh)     |
+| Notifications | Sonner                                |
+| Icons         | Lucide React                          |
+| Font          | Inter (brand) + JetBrains Mono (code) |
 
 ---
 
@@ -54,47 +54,47 @@ shared/       ← Non-domain reusable code: design system, HTTP client, utilitie
 
 Large, self-contained UI sections. Each widget has one job and is independently renderable.
 
-| Widget | Responsibility |
-|---|---|
-| `sidebar/` | Navigation, user info, logout |
-| `unverified-banner/` | Email verification prompt |
-| `org-grid/` | Organization card list |
-| `org-members/` | Members table |
-| `org-invitations/` | Pending invitations table + send form |
-| `org-settings/` | Settings form + danger zone |
-| `invitations-inbox/` | User's personal invitation inbox |
+| Widget               | Responsibility                        |
+| -------------------- | ------------------------------------- |
+| `sidebar/`           | Navigation, user info, logout         |
+| `unverified-banner/` | Email verification prompt             |
+| `org-grid/`          | Organization card list                |
+| `org-members/`       | Members table                         |
+| `org-invitations/`   | Pending invitations table + send form |
+| `org-settings/`      | Settings form + danger zone           |
+| `invitations-inbox/` | User's personal invitation inbox      |
 
 #### `features/` — User interactions
 
 Each feature is a specific user action. Features know about entities but not about other features.
 
-| Feature | Responsibility |
-|---|---|
-| `auth/login/` | Login form |
-| `auth/register/` | Registration form |
-| `auth/forgot-password/` | Forgot password form |
-| `auth/reset-password/` | Reset password form |
-| `org/create-org/` | Create organization form |
-| `org/invite-member/` | Invite member form |
+| Feature                 | Responsibility           |
+| ----------------------- | ------------------------ |
+| `auth/login/`           | Login form               |
+| `auth/register/`        | Registration form        |
+| `auth/forgot-password/` | Forgot password form     |
+| `auth/reset-password/`  | Reset password form      |
+| `org/create-org/`       | Create organization form |
+| `org/invite-member/`    | Invite member form       |
 
 #### `entities/` — Business objects
 
 Each entity slice owns its **types**, **API calls**, and **query hooks**. The `model/` segment is the only place `useQuery` and `useMutation` are called.
 
-| Entity | Segments |
-|---|---|
-| `user/` | `api/` (auth + profile HTTP), `model/` (types, Zustand store, `useAuth`), `ui/` (Avatar) |
-| `org/` | `api/` (org CRUD HTTP), `model/` (types, `useOrg`, `useCreateOrg`, etc.) |
-| `member/` | `api/` (member HTTP), `model/` (types, `useMembers`, `useRemoveMember`, etc.) |
+| Entity        | Segments                                                                                     |
+| ------------- | -------------------------------------------------------------------------------------------- |
+| `user/`       | `api/` (auth + profile HTTP), `model/` (types, Zustand store, `useAuth`), `ui/` (Avatar)     |
+| `org/`        | `api/` (org CRUD HTTP), `model/` (types, `useOrg`, `useCreateOrg`, etc.)                     |
+| `member/`     | `api/` (member HTTP), `model/` (types, `useMembers`, `useRemoveMember`, etc.)                |
 | `invitation/` | `api/` (invitation HTTP), `model/` (types, `useOrgInvitations`, `useAcceptInvitation`, etc.) |
 
 #### `shared/` — Reusable, non-domain
 
-| Segment | Contents |
-|---|---|
-| `shared/ui/` | Design system: Button, Input, Textarea, Card, Badge, Spinner, FormField, Label |
-| `shared/api/` | Axios client + silent token refresh interceptor, `extractApiError()` |
-| `shared/lib/` | `cn()`, `slugify()`, `queryKeys` factory, API envelope types |
+| Segment       | Contents                                                                       |
+| ------------- | ------------------------------------------------------------------------------ |
+| `shared/ui/`  | Design system: Button, Input, Textarea, Card, Badge, Spinner, FormField, Label |
+| `shared/api/` | Axios client + silent token refresh interceptor, `extractApiError()`           |
+| `shared/lib/` | `cn()`, `slugify()`, `queryKeys` factory, API envelope types                   |
 
 ---
 
@@ -141,7 +141,7 @@ npm run dev
 
 ## Environment variables
 
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | Backend base URL (default: `http://localhost:3000/api`) |
-| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth client ID |
+| Variable                       | Description                                             |
+| ------------------------------ | ------------------------------------------------------- |
+| `NEXT_PUBLIC_API_URL`          | Backend base URL (default: `http://localhost:3000/api`) |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google OAuth client ID                                  |

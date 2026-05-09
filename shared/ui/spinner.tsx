@@ -15,14 +15,7 @@ export function Spinner({ size = 20, className }: SpinnerProps) {
       className={cn("animate-spin text-primary", className)}
       aria-label="Loading"
     >
-      <circle
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        strokeWidth="3"
-        strokeOpacity="0.2"
-      />
+      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.2" />
       <path
         d="M12 2a10 10 0 0 1 10 10"
         stroke="currentColor"

@@ -6,7 +6,10 @@ import axios, {
 } from "axios";
 import type { ApiResponse } from "@/shared/lib/types";
 
-interface AuthTokens { accessToken: string; refreshToken: string; }
+interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+}
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/api";
 
@@ -62,8 +65,7 @@ function drainQueue(token: string) {
 client.interceptors.response.use(
   (res: AxiosResponse) => res,
   async (error) => {
-    const original: InternalAxiosRequestConfig & { _retry?: boolean } =
-      error.config;
+    const original: InternalAxiosRequestConfig & { _retry?: boolean } = error.config;
 
     const status: number = error.response?.status;
     const isRefreshEndpoint = original.url?.includes("/auth/refresh");
@@ -89,11 +91,9 @@ client.interceptors.response.use(
 
       isRefreshing = true;
       try {
-        const res = await axios.post<ApiResponse<AuthTokens>>(
-          `${BASE_URL}/auth/refresh`,
-          null,
-          { headers: { Authorization: `Bearer ${refreshToken}` } }
-        );
+        const res = await axios.post<ApiResponse<AuthTokens>>(`${BASE_URL}/auth/refresh`, null, {
+          headers: { Authorization: `Bearer ${refreshToken}` },
+        });
         const { accessToken, refreshToken: newRefresh } = res.data.data;
         tokenStore.setTokens(accessToken, newRefresh);
         drainQueue(accessToken);
@@ -119,10 +119,7 @@ function redirectToLogin() {
 }
 
 /* Typed helper that unwraps the envelope */
-export async function apiGet<T>(
-  url: string,
-  config?: AxiosRequestConfig
-): Promise<T> {
+export async function apiGet<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
   const res = await client.get<ApiResponse<T>>(url, config);
   return res.data.data;
 }
@@ -145,10 +142,7 @@ export async function apiPatch<T>(
   return res.data.data;
 }
 
-export async function apiDelete<T = void>(
-  url: string,
-  config?: AxiosRequestConfig
-): Promise<T> {
+export async function apiDelete<T = void>(url: string, config?: AxiosRequestConfig): Promise<T> {
   const res = await client.delete<ApiResponse<T>>(url, config);
   return res.data.data;
 }

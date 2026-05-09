@@ -22,7 +22,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, [refreshSession]);
 
-  useEffect(() => { setSessionCookie(!!user); }, [user]);
+  useEffect(() => {
+    setSessionCookie(!!user);
+  }, [user]);
 
   return <>{children}</>;
 }

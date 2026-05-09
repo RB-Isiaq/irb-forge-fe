@@ -13,12 +13,7 @@ const sizeClasses = {
   lg: "h-11 w-11 text-[15px]",
 };
 
-export function Avatar({
-  firstName,
-  lastName,
-  size = "md",
-  className,
-}: AvatarProps) {
+export function Avatar({ firstName, lastName, size = "md", className }: AvatarProps) {
   return (
     <span
       className={cn(

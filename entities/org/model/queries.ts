@@ -15,8 +15,8 @@ export function useOrgs() {
 export function useOrg(slug: string) {
   return useQuery({
     queryKey: queryKeys.orgs.detail(slug),
-    queryFn:  () => orgApi.get(slug),
-    enabled:  !!slug,
+    queryFn: () => orgApi.get(slug),
+    enabled: !!slug,
   });
 }
 

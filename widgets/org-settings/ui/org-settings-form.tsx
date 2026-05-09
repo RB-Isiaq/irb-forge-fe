@@ -13,7 +13,7 @@ import { PageSpinner } from "@/shared/ui/spinner";
 import { useOrg, useUpdateOrg, useDeleteOrg } from "@/entities/org";
 
 const schema = z.object({
-  name:        z.string().min(2).max(80).trim(),
+  name: z.string().min(2).max(80).trim(),
   description: z.string().max(500).optional(),
 });
 type FormData = z.infer<typeof schema>;
@@ -23,8 +23,12 @@ export function OrgSettingsForm({ slug }: { slug: string }) {
   const updateOrg = useUpdateOrg(slug);
   const deleteOrg = useDeleteOrg(slug);
 
-  const { register, handleSubmit, reset, formState: { errors, isDirty } } =
-    useForm<FormData>({ resolver: zodResolver(schema) });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm<FormData>({ resolver: zodResolver(schema) });
 
   useEffect(() => {
     if (org) reset({ name: org.name, description: org.description ?? "" });
@@ -49,10 +53,21 @@ export function OrgSettingsForm({ slug }: { slug: string }) {
             <FormField label="Name" htmlFor="name" error={errors.name?.message} required>
               <Input id="name" error={!!errors.name} {...register("name")} />
             </FormField>
-            <FormField label="Description" htmlFor="description" error={errors.description?.message}>
-              <Textarea id="description" rows={3} error={!!errors.description} {...register("description")} />
+            <FormField
+              label="Description"
+              htmlFor="description"
+              error={errors.description?.message}
+            >
+              <Textarea
+                id="description"
+                rows={3}
+                error={!!errors.description}
+                {...register("description")}
+              />
             </FormField>
-            <Button type="submit" loading={updateOrg.isPending} disabled={!isDirty}>Save changes</Button>
+            <Button type="submit" loading={updateOrg.isPending} disabled={!isDirty}>
+              Save changes
+            </Button>
           </form>
         </CardContent>
       </Card>
@@ -60,11 +75,19 @@ export function OrgSettingsForm({ slug }: { slug: string }) {
       <Card className="border-error/30">
         <CardHeader className="border-error/20">
           <CardTitle className="text-error">Danger zone</CardTitle>
-          <CardDescription>Permanently delete this organization. This cannot be undone.</CardDescription>
+          <CardDescription>
+            Permanently delete this organization. This cannot be undone.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button variant="danger" size="sm" loading={deleteOrg.isPending}
-            onClick={() => { if (confirm(`Delete "${org.name}"? This cannot be undone.`)) deleteOrg.mutate(); }}>
+          <Button
+            variant="danger"
+            size="sm"
+            loading={deleteOrg.isPending}
+            onClick={() => {
+              if (confirm(`Delete "${org.name}"? This cannot be undone.`)) deleteOrg.mutate();
+            }}
+          >
             Delete organization
           </Button>
         </CardContent>

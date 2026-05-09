@@ -10,8 +10,8 @@ import type { UpdateMemberRolePayload } from "./types";
 export function useMembers(slug: string) {
   return useQuery({
     queryKey: queryKeys.members.list(slug),
-    queryFn:  () => memberApi.list(slug),
-    enabled:  !!slug,
+    queryFn: () => memberApi.list(slug),
+    enabled: !!slug,
   });
 }
 

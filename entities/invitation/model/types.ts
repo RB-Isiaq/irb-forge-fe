@@ -16,11 +16,18 @@ export interface Invitation {
 
 export interface InvitationPreview {
   organization: { name: string; slug: string; description: string | null };
-  invitedBy:    { firstName: string; lastName: string };
+  invitedBy: { firstName: string; lastName: string };
   role: OrgRole;
   expiresAt: string;
 }
 
-export interface SendInvitationPayload  { email: string; role?: Exclude<OrgRole, "owner">; }
-export interface AcceptInvitationPayload  { token: string; }
-export interface DeclineInvitationPayload { token: string; }
+export interface SendInvitationPayload {
+  email: string;
+  role?: Exclude<OrgRole, "owner">;
+}
+export interface AcceptInvitationPayload {
+  token: string;
+}
+export interface DeclineInvitationPayload {
+  token: string;
+}

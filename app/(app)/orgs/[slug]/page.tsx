@@ -8,10 +8,10 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { PageSpinner } from "@/shared/ui/spinner";
 
 const tabs = [
-  { label: "Members",     href: "members",     icon: Users },
-  { label: "Programs",    href: "programs",    icon: BookOpen },
+  { label: "Members", href: "members", icon: Users },
+  { label: "Programs", href: "programs", icon: BookOpen },
   { label: "Invitations", href: "invitations", icon: Mail },
-  { label: "Settings",    href: "settings",    icon: Settings },
+  { label: "Settings", href: "settings", icon: Settings },
 ] as const;
 
 export default function OrgDashboardPage() {

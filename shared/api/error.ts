@@ -21,10 +21,5 @@ export function extractApiError(
   fallback = "Something went wrong. Try again."
 ): string {
   const e = err as ApiErrorShape;
-  return (
-    e?.response?.data?.error?.message ??
-    e?.response?.data?.message ??
-    e?.message ??
-    fallback
-  );
+  return e?.response?.data?.error?.message ?? e?.response?.data?.message ?? e?.message ?? fallback;
 }

@@ -56,8 +56,11 @@ export const useAuthStore = create<AuthState>()((set) => ({
 
   logout: async () => {
     const api = await getApi();
-    try { await api.logout(); } catch { /* always clear */ }
-    finally {
+    try {
+      await api.logout();
+    } catch {
+      /* always clear */
+    } finally {
       tokenStore.clear();
       set({ user: null });
     }
@@ -65,7 +68,10 @@ export const useAuthStore = create<AuthState>()((set) => ({
 
   refreshSession: async () => {
     const refreshToken = tokenStore.getRefresh();
-    if (!refreshToken) { set({ isInitialized: true }); return; }
+    if (!refreshToken) {
+      set({ isInitialized: true });
+      return;
+    }
     const api = await getApi();
     try {
       const user = await api.getProfile();

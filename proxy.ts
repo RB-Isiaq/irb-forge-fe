@@ -9,12 +9,7 @@ const PUBLIC_ROUTES = new Set([
   "/invitations/preview",
 ]);
 
-const AUTH_ROUTES = new Set([
-  "/login",
-  "/register",
-  "/forgot-password",
-  "/reset-password",
-]);
+const AUTH_ROUTES = new Set(["/login", "/register", "/forgot-password", "/reset-password"]);
 
 function isPublic(pathname: string): boolean {
   for (const route of PUBLIC_ROUTES) {
@@ -64,7 +59,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|public/).*)",
-  ],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|public/).*)"],
 };

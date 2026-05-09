@@ -18,8 +18,12 @@ export function OrgGrid() {
         <CardContent className="py-16 text-center">
           <Building2 size={36} className="mx-auto text-text-muted mb-3" strokeWidth={1.5} />
           <p className="text-[15px] font-medium text-text-primary mb-1">No organizations yet</p>
-          <p className="text-[13px] text-text-muted mb-5">Create your first organization to get started.</p>
-          <Link href="/orgs/new"><Button size="sm">Create organization</Button></Link>
+          <p className="text-[13px] text-text-muted mb-5">
+            Create your first organization to get started.
+          </p>
+          <Link href="/orgs/new">
+            <Button size="sm">Create organization</Button>
+          </Link>
         </CardContent>
       </Card>
     );
@@ -40,7 +44,9 @@ export function OrgGrid() {
                   <p className="text-[12px] text-text-muted">/{org.slug}</p>
                 </div>
               </div>
-              {org.description && <p className="text-[13px] text-text-secondary line-clamp-2">{org.description}</p>}
+              {org.description && (
+                <p className="text-[13px] text-text-secondary line-clamp-2">{org.description}</p>
+              )}
             </CardContent>
           </Card>
         </Link>

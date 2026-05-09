@@ -83,16 +83,23 @@ export function OrgPrograms({ slug }: { slug: string }) {
   const { data: myEnrollments } = useMyEnrollmentsInOrg(slug);
   const myRole = useMyRole(slug);
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
+  const isMember = myRole === "member";
 
   const enrollmentMap = useMemo(
     () => Object.fromEntries((myEnrollments ?? []).map((e) => [e.programId, e.status])),
     [myEnrollments]
   );
 
+  const myPrograms = useMemo(
+    () => (programs ?? []).filter((p) => enrollmentMap[p.id]),
+    [programs, enrollmentMap]
+  );
+
   if (isLoading) return <PageSpinner />;
 
   return (
     <div className="space-y-5">
+      {/* Create form — managers only */}
       {canManage &&
         (showCreateForm ? (
           <Card>
@@ -119,6 +126,25 @@ export function OrgPrograms({ slug }: { slug: string }) {
           </div>
         ))}
 
+      {/* My programs — members with at least one enrollment */}
+      {isMember && myPrograms.length > 0 && (
+        <div className="space-y-3">
+          <p className="text-[13px] font-semibold text-text-muted uppercase tracking-wide">
+            My programs
+          </p>
+          {myPrograms.map((program) => (
+            <ProgramCard
+              key={program.id}
+              program={program}
+              slug={slug}
+              myEnrollmentStatus={enrollmentMap[program.id]}
+            />
+          ))}
+          <div className="border-t border-border" />
+        </div>
+      )}
+
+      {/* All programs */}
       {!programs?.length ? (
         <Card>
           <CardContent className="py-16 text-center">
@@ -133,6 +159,11 @@ export function OrgPrograms({ slug }: { slug: string }) {
         </Card>
       ) : (
         <div className="space-y-3">
+          {isMember && myPrograms.length > 0 && (
+            <p className="text-[13px] font-semibold text-text-muted uppercase tracking-wide">
+              All programs
+            </p>
+          )}
           {programs.map((program) => (
             <ProgramCard
               key={program.id}

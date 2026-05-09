@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useOrg } from "@/entities/org";
-import { Users, BookOpen, Mail, Settings } from "lucide-react";
+import { Users, BookOpen, Megaphone, Mail, Settings } from "lucide-react";
 import { Card, CardContent } from "@/shared/ui/card";
 import { PageSpinner } from "@/shared/ui/spinner";
 
 const tabs = [
   { label: "Members", href: "members", icon: Users },
   { label: "Programs", href: "programs", icon: BookOpen },
+  { label: "Announcements", href: "messages", icon: Megaphone },
   { label: "Invitations", href: "invitations", icon: Mail },
   { label: "Settings", href: "settings", icon: Settings },
 ] as const;
@@ -29,7 +30,7 @@ export default function OrgDashboardPage() {
         <p className="text-[12px] text-text-muted mt-1">/{org.slug}</p>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
         {tabs.map(({ label, href, icon: Icon }) => (
           <Link key={href} href={`/orgs/${slug}/${href}`}>
             <Card className="hover:border-primary/40 transition-colors cursor-pointer">

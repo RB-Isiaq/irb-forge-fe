@@ -41,14 +41,21 @@ export function useRemoveMember(slug: string) {
 }
 
 /*
- * Derives the current user's role in an org from the cached members list.
- * Accepts userId as a parameter to avoid a cross-entity import of useAuth.
- * Callers: widgets/features that already have user from useAuth().
+ * Returns the calling user's own membership via GET /organizations/:slug/members/me.
+ * The backend resolves identity from the JWT — no userId param needed.
  */
-export function useMyRole(slug: string, userId: string | null | undefined): OrgRole | null {
-  const { data: members } = useMembers(slug);
-  if (!userId || !members) return null;
-  return members.find((m) => m.userId === userId)?.role ?? null;
+export function useMyMembership(slug: string) {
+  return useQuery({
+    queryKey: queryKeys.members.me(slug),
+    queryFn: () => memberApi.getMe(slug),
+    enabled: !!slug,
+    retry: false,
+  });
+}
+
+export function useMyRole(slug: string): OrgRole | null {
+  const { data: membership } = useMyMembership(slug);
+  return membership?.role ?? null;
 }
 
 export function useLeaveOrg(slug: string) {

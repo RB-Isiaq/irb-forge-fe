@@ -3,7 +3,6 @@
 import { Megaphone } from "lucide-react";
 import { useMessages } from "@/entities/message";
 import { useMyRole } from "@/entities/member";
-import { useAuth } from "@/entities/user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { PageSpinner } from "@/shared/ui/spinner";
 import { getDisplayName } from "@/shared/lib";
@@ -23,8 +22,7 @@ function timeAgo(iso: string) {
 
 export function OrgAnnouncements({ slug }: { slug: string }) {
   const { data: messages, isLoading } = useMessages(slug);
-  const { user } = useAuth();
-  const myRole = useMyRole(slug, user?.id);
+  const myRole = useMyRole(slug);
   const canPost = myRole === "owner" || myRole === "admin" || myRole === "mentor";
 
   if (isLoading) return <PageSpinner />;

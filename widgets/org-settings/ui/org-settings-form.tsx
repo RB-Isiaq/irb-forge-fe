@@ -12,7 +12,6 @@ import { FormField } from "@/shared/ui/form-field";
 import { PageSpinner } from "@/shared/ui/spinner";
 import { useOrg, useUpdateOrg, useDeleteOrg } from "@/entities/org";
 import { useMyRole } from "@/entities/member";
-import { useAuth } from "@/entities/user";
 
 const schema = z.object({
   name: z.string().min(2).max(80).trim(),
@@ -24,8 +23,7 @@ export function OrgSettingsForm({ slug }: { slug: string }) {
   const { data: org, isLoading } = useOrg(slug);
   const updateOrg = useUpdateOrg(slug);
   const deleteOrg = useDeleteOrg(slug);
-  const { user } = useAuth();
-  const myRole = useMyRole(slug, user?.id);
+  const myRole = useMyRole(slug);
   const isOwner = myRole === "owner";
 
   const {

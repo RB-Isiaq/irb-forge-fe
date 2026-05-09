@@ -12,7 +12,6 @@ import {
   useUpdateEnrollmentStatus,
 } from "@/entities/enrollment";
 import { useMyRole } from "@/entities/member";
-import { useAuth } from "@/entities/user";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
@@ -40,8 +39,7 @@ function formatDate(iso: string | null) {
 export function ProgramDetail({ slug, programId }: { slug: string; programId: string }) {
   const [showEditForm, setShowEditForm] = useState(false);
   const { data: program, isLoading } = useProgram(slug, programId);
-  const { user } = useAuth();
-  const myRole = useMyRole(slug, user?.id);
+  const myRole = useMyRole(slug);
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
   const isOwnerOrAdmin = myRole === "owner" || myRole === "admin";
   const isMember = myRole === "member";

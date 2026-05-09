@@ -22,6 +22,7 @@ export const queryKeys = {
   /* ─── Members ────────────────────────────────────── */
   members: {
     list: (slug: string) => ["orgs", slug, "members"] as const,
+    me: (slug: string) => ["orgs", slug, "members", "me"] as const,
   },
 
   /* ─── Invitations ────────────────────────────────── */

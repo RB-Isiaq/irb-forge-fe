@@ -6,7 +6,6 @@ import { Plus, BookOpen, Calendar, Users } from "lucide-react";
 import { usePrograms, type Program, type ProgramStatus } from "@/entities/program";
 import { useMyEnrollmentsInOrg } from "@/entities/enrollment";
 import { useMyRole } from "@/entities/member";
-import { useAuth } from "@/entities/user";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
@@ -82,8 +81,7 @@ export function OrgPrograms({ slug }: { slug: string }) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const { data: programs, isLoading } = usePrograms(slug);
   const { data: myEnrollments } = useMyEnrollmentsInOrg(slug);
-  const { user } = useAuth();
-  const myRole = useMyRole(slug, user?.id);
+  const myRole = useMyRole(slug);
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
 
   const enrollmentMap = useMemo(

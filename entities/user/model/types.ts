@@ -3,11 +3,13 @@ export type PlatformRole = "user" | "super_admin";
 export interface User {
   id: string;
   email: string;
-  firstName: string;
-  lastName: string;
+  // Backend UserResponseDto declares these nullable — Google sign-in may omit them
+  firstName: string | null;
+  lastName: string | null;
   isVerified: boolean;
   role: PlatformRole;
-  googleId: string | null;
+  // Not returned by backend yet — keep optional until UserResponseDto exposes it
+  googleId?: string | null;
   createdAt: string;
   updatedAt: string;
 }

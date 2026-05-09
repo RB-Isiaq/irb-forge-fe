@@ -52,6 +52,7 @@ export function useCancelInvitation(slug: string) {
   });
 }
 
+/* Token-based — used when accepting from an email link (invitation preview page) */
 export function useAcceptInvitation() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -74,5 +75,47 @@ export function useDeclineInvitation() {
       toast.success("Invitation declined.");
     },
     onError: (err) => toast.error(extractApiError(err, "Could not decline invitation.")),
+  });
+}
+
+/*
+ * ID-based — used from the in-app inbox.
+ * Backend must implement: PATCH /invitations/:id/accept and PATCH /invitations/:id/decline
+ * These endpoints should verify req.user.email === invitation.email before accepting.
+ */
+export function useAcceptInvitationById() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => invitationApi.acceptById(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.invitations.mine() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.orgs.all() });
+      toast.success("You've joined the organization.");
+    },
+    onError: (err) => toast.error(extractApiError(err, "Could not accept invitation.")),
+  });
+}
+
+export function useDeclineInvitationById() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => invitationApi.declineById(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.invitations.mine() });
+      toast.success("Invitation declined.");
+    },
+    onError: (err) => toast.error(extractApiError(err, "Could not decline invitation.")),
+  });
+}
+
+/*
+ * Resend — re-sends the invitation email.
+ * Backend must implement: POST /organizations/:slug/invitations/:id/resend
+ */
+export function useResendInvitation(slug: string) {
+  return useMutation({
+    mutationFn: (id: string) => invitationApi.resend(slug, id),
+    onSuccess: () => toast.success("Invitation resent."),
+    onError: (err) => toast.error(extractApiError(err, "Could not resend invitation.")),
   });
 }

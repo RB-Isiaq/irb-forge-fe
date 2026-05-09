@@ -10,13 +10,13 @@ export interface Invitation {
   status: InvitationStatus;
   expiresAt: string;
   createdAt: string;
-  invitedBy?: { firstName: string; lastName: string };
+  invitedBy?: { firstName: string | null; lastName: string | null };
   organization?: { name: string; slug: string; description: string | null };
 }
 
 export interface InvitationPreview {
   organization: { name: string; slug: string; description: string | null };
-  invitedBy: { firstName: string; lastName: string };
+  invitedBy: { firstName: string | null; lastName: string | null };
   role: OrgRole;
   expiresAt: string;
 }

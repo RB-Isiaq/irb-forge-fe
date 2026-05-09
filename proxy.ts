@@ -7,6 +7,8 @@ const PUBLIC_ROUTES = new Set([
   "/forgot-password",
   "/reset-password",
   "/invitations/preview",
+  "/invitations/accept",
+  "/invitations/decline",
 ]);
 
 const AUTH_ROUTES = new Set(["/login", "/register", "/forgot-password", "/reset-password"]);

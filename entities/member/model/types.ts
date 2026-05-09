@@ -1,5 +1,3 @@
-import type { User } from "@/entities/user";
-
 export type OrgRole = "owner" | "admin" | "mentor" | "member";
 
 export interface Membership {
@@ -8,7 +6,12 @@ export interface Membership {
   organizationId: string;
   role: OrgRole;
   joinedAt: string;
-  user: Pick<User, "id" | "email" | "firstName" | "lastName">;
+  user: {
+    id: string;
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+  };
 }
 
 export interface UpdateMemberRolePayload {

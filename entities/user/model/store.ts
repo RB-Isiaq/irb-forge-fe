@@ -2,23 +2,34 @@
 
 import { create } from "zustand";
 import { tokenStore } from "@/shared/api";
-import type { User, LoginPayload, RegisterPayload } from "./types";
+import type { User, LoginPayload, RegisterPayload, GoogleSignInPayload } from "./types";
 
 interface AuthState {
   user: User | null;
   isLoading: boolean;
   isInitialized: boolean;
   login: (payload: LoginPayload) => Promise<void>;
+  loginWithGoogle: (payload: GoogleSignInPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<User>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
   setUser: (user: User) => void;
 }
 
-/* Lazy import to avoid any potential circular dependency at module init */
 async function getApi() {
   const { userApi } = await import("../api");
   return userApi;
+}
+
+async function fetchAndSetUser(
+  accessToken: string,
+  refreshToken: string,
+  set: (partial: Partial<AuthState>) => void
+) {
+  tokenStore.setTokens(accessToken, refreshToken);
+  const api = await getApi();
+  const user = await api.getProfile();
+  set({ user });
 }
 
 export const useAuthStore = create<AuthState>()((set) => ({
@@ -46,9 +57,18 @@ export const useAuthStore = create<AuthState>()((set) => ({
     set({ isLoading: true });
     try {
       const { accessToken, refreshToken } = await api.login(payload);
-      tokenStore.setTokens(accessToken, refreshToken);
-      const user = await api.getProfile();
-      set({ user });
+      await fetchAndSetUser(accessToken, refreshToken, set);
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  loginWithGoogle: async (payload) => {
+    const api = await getApi();
+    set({ isLoading: true });
+    try {
+      const { accessToken, refreshToken } = await api.googleSignIn(payload);
+      await fetchAndSetUser(accessToken, refreshToken, set);
     } finally {
       set({ isLoading: false });
     }
@@ -59,7 +79,7 @@ export const useAuthStore = create<AuthState>()((set) => ({
     try {
       await api.logout();
     } catch {
-      /* always clear */
+      /* always clear local state regardless */
     } finally {
       tokenStore.clear();
       set({ user: null });

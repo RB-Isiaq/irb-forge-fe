@@ -1,4 +1,3 @@
-/* Public API for the user entity slice */
 export type {
   User,
   PlatformRole,
@@ -16,5 +15,6 @@ export type {
 
 export { useAuthStore } from "./model/store";
 export { useAuth } from "./model/use-auth";
+export { useUpdateProfile, useChangePassword } from "./model/queries";
 export { userApi } from "./api";
 export { Avatar } from "./ui/avatar";

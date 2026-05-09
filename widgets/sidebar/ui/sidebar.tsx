@@ -6,16 +6,20 @@ import { LayoutDashboard, Building2, Bell, Settings, LogOut } from "lucide-react
 import { cn } from "@/shared/lib";
 import { Avatar } from "@/entities/user/ui/avatar";
 import { useAuth } from "@/entities/user";
-
-const navItems = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Organizations", href: "/orgs", icon: Building2 },
-  { label: "Invitations", href: "/invitations", icon: Bell },
-] as const;
+import { useMyInvitations } from "@/entities/invitation";
 
 export function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { data: invitations } = useMyInvitations();
+
+  const pendingCount = invitations?.filter((i) => i.status === "pending").length ?? 0;
+
+  const navItems = [
+    { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard, badge: 0 },
+    { label: "Organizations", href: "/orgs", icon: Building2, badge: 0 },
+    { label: "Invitations", href: "/invitations", icon: Bell, badge: pendingCount },
+  ];
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 w-56 flex flex-col bg-surface border-r border-border">
@@ -27,7 +31,7 @@ export function Sidebar() {
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-0.5">
-        {navItems.map(({ label, href, icon: Icon }) => {
+        {navItems.map(({ label, href, icon: Icon, badge }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (
             <Link
@@ -41,7 +45,12 @@ export function Sidebar() {
               )}
             >
               <Icon size={16} strokeWidth={active ? 2.2 : 1.8} />
-              {label}
+              <span className="flex-1">{label}</span>
+              {badge > 0 && (
+                <span className="h-5 min-w-5 px-1 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">
+                  {badge > 99 ? "99+" : badge}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -50,15 +59,22 @@ export function Sidebar() {
       <div className="shrink-0 border-t border-border p-3 space-y-0.5">
         <Link
           href="/settings"
-          className="flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium text-text-secondary hover:bg-gray-100 hover:text-text-primary transition-colors"
+          className={cn(
+            "flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium transition-colors",
+            pathname === "/settings"
+              ? "bg-primary/10 text-primary"
+              : "text-text-secondary hover:bg-gray-100 hover:text-text-primary"
+          )}
         >
-          <Settings size={16} strokeWidth={1.8} /> Settings
+          <Settings size={16} strokeWidth={pathname === "/settings" ? 2.2 : 1.8} />
+          Settings
         </Link>
         <button
           onClick={() => logout()}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium text-text-secondary hover:bg-gray-100 hover:text-text-primary transition-colors"
         >
-          <LogOut size={16} strokeWidth={1.8} /> Sign out
+          <LogOut size={16} strokeWidth={1.8} />
+          Sign out
         </button>
         {user && (
           <div className="flex items-center gap-2.5 px-3 pt-3 border-t border-border mt-1">

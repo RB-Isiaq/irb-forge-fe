@@ -14,5 +14,7 @@ export {
   useCancelInvitation,
   useAcceptInvitation,
   useDeclineInvitation,
+  useAcceptInvitationById,
+  useDeclineInvitationById,
 } from "./model/queries";
 export { invitationApi } from "./api";

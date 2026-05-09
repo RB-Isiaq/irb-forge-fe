@@ -1,2 +1,2 @@
-export { cn, getInitials, slugify } from "./utils";
+export { cn, getInitials, getDisplayName, slugify } from "./utils";
 export { queryKeys } from "./query-keys";

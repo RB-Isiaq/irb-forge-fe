@@ -1,8 +1,8 @@
 import { cn, getInitials } from "@/shared/lib";
 
 interface AvatarProps {
-  firstName: string;
-  lastName: string;
+  firstName: string | null | undefined;
+  lastName: string | null | undefined;
   size?: "sm" | "md" | "lg";
   className?: string;
 }

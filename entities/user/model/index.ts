@@ -15,3 +15,4 @@ export type {
 
 export { useAuthStore } from "./store";
 export { useAuth } from "./use-auth";
+export { useUpdateProfile, useChangePassword } from "./queries";

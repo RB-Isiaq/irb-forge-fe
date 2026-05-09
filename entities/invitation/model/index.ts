@@ -16,4 +16,5 @@ export {
   useDeclineInvitation,
   useAcceptInvitationById,
   useDeclineInvitationById,
+  useResendInvitation,
 } from "./queries";

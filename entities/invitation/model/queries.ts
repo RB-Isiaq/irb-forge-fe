@@ -107,3 +107,15 @@ export function useDeclineInvitationById() {
     onError: (err) => toast.error(extractApiError(err, "Could not decline invitation.")),
   });
 }
+
+/*
+ * Resend — re-sends the invitation email.
+ * Backend must implement: POST /organizations/:slug/invitations/:id/resend
+ */
+export function useResendInvitation(slug: string) {
+  return useMutation({
+    mutationFn: (id: string) => invitationApi.resend(slug, id),
+    onSuccess: () => toast.success("Invitation resent."),
+    onError: (err) => toast.error(extractApiError(err, "Could not resend invitation.")),
+  });
+}

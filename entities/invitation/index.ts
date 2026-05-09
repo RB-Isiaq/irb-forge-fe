@@ -16,5 +16,6 @@ export {
   useDeclineInvitation,
   useAcceptInvitationById,
   useDeclineInvitationById,
+  useResendInvitation,
 } from "./model/queries";
 export { invitationApi } from "./api";

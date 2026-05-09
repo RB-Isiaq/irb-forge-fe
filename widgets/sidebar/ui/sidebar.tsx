@@ -1,15 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Building2, Bell, Settings, LogOut } from "lucide-react";
-import { cn } from "@/shared/lib";
+import { cn, setSessionCookie } from "@/shared/lib";
 import { Avatar } from "@/entities/user/ui/avatar";
 import { useAuth } from "@/entities/user";
 import { useMyInvitations } from "@/entities/invitation";
 
 export function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, logout } = useAuth();
   const { data: invitations } = useMyInvitations();
 
@@ -70,7 +71,11 @@ export function Sidebar() {
           Settings
         </Link>
         <button
-          onClick={() => logout()}
+          onClick={async () => {
+            await logout();
+            setSessionCookie(false);
+            router.push("/login");
+          }}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-[7px] text-[13px] font-medium text-text-secondary hover:bg-gray-100 hover:text-text-primary transition-colors"
         >
           <LogOut size={16} strokeWidth={1.8} />

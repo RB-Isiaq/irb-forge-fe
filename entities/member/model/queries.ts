@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { extractApiError } from "@/shared/api";
 import { queryKeys } from "@/shared/lib";
 import { memberApi } from "../api";
-import type { UpdateMemberRolePayload } from "./types";
+import type { OrgRole, UpdateMemberRolePayload } from "./types";
 
 export function useMembers(slug: string) {
   return useQuery({
@@ -38,6 +38,17 @@ export function useRemoveMember(slug: string) {
     },
     onError: (err) => toast.error(extractApiError(err, "Could not remove member.")),
   });
+}
+
+/*
+ * Derives the current user's role in an org from the cached members list.
+ * Accepts userId as a parameter to avoid a cross-entity import of useAuth.
+ * Callers: widgets/features that already have user from useAuth().
+ */
+export function useMyRole(slug: string, userId: string | null | undefined): OrgRole | null {
+  const { data: members } = useMembers(slug);
+  if (!userId || !members) return null;
+  return members.find((m) => m.userId === userId)?.role ?? null;
 }
 
 export function useLeaveOrg(slug: string) {

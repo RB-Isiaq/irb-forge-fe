@@ -33,4 +33,12 @@ export const invitationApi = {
    */
   acceptById: (id: string) => apiPatch<null>(`/invitations/${id}/accept`),
   declineById: (id: string) => apiPatch<null>(`/invitations/${id}/decline`),
+
+  /*
+   * Resend: re-sends the invitation email for a pending invitation.
+   * Requires backend to implement:
+   *   POST /organizations/:slug/invitations/:id/resend
+   */
+  resend: (slug: string, id: string) =>
+    apiPost<null>(`/organizations/${slug}/invitations/${id}/resend`),
 };

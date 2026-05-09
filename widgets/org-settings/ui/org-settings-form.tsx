@@ -11,6 +11,8 @@ import { Textarea } from "@/shared/ui/textarea";
 import { FormField } from "@/shared/ui/form-field";
 import { PageSpinner } from "@/shared/ui/spinner";
 import { useOrg, useUpdateOrg, useDeleteOrg } from "@/entities/org";
+import { useMyRole } from "@/entities/member";
+import { useAuth } from "@/entities/user";
 
 const schema = z.object({
   name: z.string().min(2).max(80).trim(),
@@ -22,6 +24,9 @@ export function OrgSettingsForm({ slug }: { slug: string }) {
   const { data: org, isLoading } = useOrg(slug);
   const updateOrg = useUpdateOrg(slug);
   const deleteOrg = useDeleteOrg(slug);
+  const { user } = useAuth();
+  const myRole = useMyRole(slug, user?.id);
+  const isOwner = myRole === "owner";
 
   const {
     register,
@@ -72,26 +77,28 @@ export function OrgSettingsForm({ slug }: { slug: string }) {
         </CardContent>
       </Card>
 
-      <Card className="border-error/30">
-        <CardHeader className="border-error/20">
-          <CardTitle className="text-error">Danger zone</CardTitle>
-          <CardDescription>
-            Permanently delete this organization. This cannot be undone.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="danger"
-            size="sm"
-            loading={deleteOrg.isPending}
-            onClick={() => {
-              if (confirm(`Delete "${org.name}"? This cannot be undone.`)) deleteOrg.mutate();
-            }}
-          >
-            Delete organization
-          </Button>
-        </CardContent>
-      </Card>
+      {isOwner && (
+        <Card className="border-error/30">
+          <CardHeader className="border-error/20">
+            <CardTitle className="text-error">Danger zone</CardTitle>
+            <CardDescription>
+              Permanently delete this organization. This cannot be undone.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button
+              variant="danger"
+              size="sm"
+              loading={deleteOrg.isPending}
+              onClick={() => {
+                if (confirm(`Delete "${org.name}"? This cannot be undone.`)) deleteOrg.mutate();
+              }}
+            >
+              Delete organization
+            </Button>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

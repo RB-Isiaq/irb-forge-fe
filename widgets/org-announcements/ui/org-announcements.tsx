@@ -5,20 +5,8 @@ import { useMessages } from "@/entities/message";
 import { useMyRole } from "@/entities/member";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { PageSpinner } from "@/shared/ui/spinner";
-import { getDisplayName } from "@/shared/lib";
+import { getDisplayName, timeAgo } from "@/shared/lib";
 import { SendMessageForm } from "@/features/org/send-message/ui/send-message-form";
-
-function timeAgo(iso: string) {
-  const diff = Date.now() - new Date(iso).getTime();
-  const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
-  const hrs = Math.floor(mins / 60);
-  if (hrs < 24) return `${hrs}h ago`;
-  const days = Math.floor(hrs / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
-}
 
 export function OrgAnnouncements({ slug }: { slug: string }) {
   const { data: messages, isLoading } = useMessages(slug);

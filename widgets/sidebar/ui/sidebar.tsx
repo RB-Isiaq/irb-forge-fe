@@ -15,6 +15,7 @@ import {
   BookOpen,
   Megaphone,
   Mail,
+  CreditCard,
   Settings,
   X,
 } from "lucide-react";
@@ -132,6 +133,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
         ...(canManageOrg
           ? ([
               { label: "Invitations", href: `/orgs/${orgSlug}/invitations`, icon: Mail },
+              { label: "Billing", href: `/orgs/${orgSlug}/billing`, icon: CreditCard },
               { label: "Settings", href: `/orgs/${orgSlug}/settings`, icon: Settings },
             ] as NavItem[])
           : []),

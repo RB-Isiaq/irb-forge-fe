@@ -52,9 +52,9 @@ export const queryKeys = {
     byOrg: (slug: string) => ["orgs", slug, "messages"] as const,
   },
 
-  /* ─── Subscription + Payments ───────────────────── */
+  /* ─── Subscription + Payments (per org) ─────────── */
   subscription: {
-    me: () => ["subscription", "me"] as const,
-    payments: () => ["subscription", "payments"] as const,
+    byOrg: (slug: string) => ["orgs", slug, "subscription"] as const,
+    payments: (slug: string) => ["orgs", slug, "payments"] as const,
   },
 } as const;

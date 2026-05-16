@@ -1,10 +1,16 @@
-import { apiGet, apiPost, apiDelete } from "@/shared/api";
-import type { Subscription, Payment, CheckoutSession, PlanId } from "../model/types";
+import { apiGet, apiPost } from "@/shared/api";
+import type { Subscription, PaginatedPayments, CheckoutSession } from "../model/types";
 
 export const subscriptionApi = {
-  getMy: () => apiGet<Subscription>("/subscriptions/me"),
-  createCheckout: (planId: PlanId) =>
-    apiPost<CheckoutSession>("/subscriptions/checkout", { planId }),
-  cancel: () => apiDelete("/subscriptions/me"),
-  getPayments: () => apiGet<Payment[]>("/payments/me"),
+  getByOrg: (slug: string) => apiGet<Subscription>(`/organizations/${slug}/subscriptions`),
+
+  createCheckout: (slug: string) =>
+    apiPost<CheckoutSession>(`/organizations/${slug}/subscriptions/checkout`),
+
+  // Cancel uses POST per backend spec
+  cancel: (slug: string) =>
+    apiPost<{ message: string }>(`/organizations/${slug}/subscriptions/cancel`),
+
+  getPayments: (slug: string, page = 1, limit = 20) =>
+    apiGet<PaginatedPayments>(`/organizations/${slug}/payments?page=${page}&limit=${limit}`),
 };

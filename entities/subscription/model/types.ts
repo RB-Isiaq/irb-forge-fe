@@ -1,35 +1,33 @@
-export type PlanId = "free" | "starter" | "growth" | "scale";
-export type SubscriptionStatus = "active" | "cancelled" | "past_due" | "trialing";
-
-export interface Plan {
-  id: PlanId;
-  name: string;
-  price: number;
-  limits: {
-    orgs: number | null;
-    members: number | null;
-    programs: number | null;
-  };
-  features: string[];
-  highlight?: boolean;
-}
+export type OrgPlan = "free" | "pro";
+export type SubscriptionStatus = "active" | "past_due" | "trialing" | "cancelled";
 
 export interface Subscription {
   id: string;
-  planId: PlanId;
+  organizationId: string;
+  plan: OrgPlan;
   status: SubscriptionStatus;
-  currentPeriodEnd: string;
-  cancelAtPeriodEnd: boolean;
+  stripeCustomerId: string | null;
+  currentPeriodEnd: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Payment {
   id: string;
-  amount: number;
+  organizationId: string;
+  stripePaymentIntentId: string;
+  amount: number; // in cents — divide by 100 for display
   currency: string;
   status: "succeeded" | "failed" | "refunded";
-  description: string;
   createdAt: string;
-  receiptUrl?: string;
+}
+
+export interface PaginatedPayments {
+  items: Payment[];
+  total: number;
+  page: number;
+  limit: number;
+  pages: number;
 }
 
 export interface CheckoutSession {

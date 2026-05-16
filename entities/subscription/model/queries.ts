@@ -5,27 +5,28 @@ import { toast } from "sonner";
 import { extractApiError } from "@/shared/api";
 import { queryKeys } from "@/shared/lib";
 import { subscriptionApi } from "../api";
-import type { PlanId } from "./types";
 
-export function useMySubscription() {
+export function useOrgSubscription(slug: string) {
   return useQuery({
-    queryKey: queryKeys.subscription.me(),
-    queryFn: () => subscriptionApi.getMy(),
+    queryKey: queryKeys.subscription.byOrg(slug),
+    queryFn: () => subscriptionApi.getByOrg(slug),
+    enabled: !!slug,
     retry: false,
   });
 }
 
-export function useMyPayments() {
+export function useOrgPayments(slug: string) {
   return useQuery({
-    queryKey: queryKeys.subscription.payments(),
-    queryFn: () => subscriptionApi.getPayments(),
+    queryKey: queryKeys.subscription.payments(slug),
+    queryFn: () => subscriptionApi.getPayments(slug),
+    enabled: !!slug,
     retry: false,
   });
 }
 
-export function useCreateCheckout() {
+export function useCreateCheckout(slug: string) {
   return useMutation({
-    mutationFn: (planId: PlanId) => subscriptionApi.createCheckout(planId),
+    mutationFn: () => subscriptionApi.createCheckout(slug),
     onSuccess: ({ url }) => {
       window.location.href = url;
     },
@@ -33,15 +34,13 @@ export function useCreateCheckout() {
   });
 }
 
-export function useCancelSubscription() {
+export function useCancelSubscription(slug: string) {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: () => subscriptionApi.cancel(),
+    mutationFn: () => subscriptionApi.cancel(slug),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.me() });
-      toast.success(
-        "Subscription cancelled. Access continues until the end of your billing period."
-      );
+      queryClient.invalidateQueries({ queryKey: queryKeys.subscription.byOrg(slug) });
+      toast.success("Subscription cancelled. Your org is back on Free.");
     },
     onError: (err) => toast.error(extractApiError(err, "Could not cancel subscription.")),
   });

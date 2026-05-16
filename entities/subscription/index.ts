@@ -1,15 +1,15 @@
 export type {
-  Plan,
-  PlanId,
+  OrgPlan,
   Subscription,
   SubscriptionStatus,
   Payment,
+  PaginatedPayments,
   CheckoutSession,
 } from "./model/types";
-export { PLANS, getPlan } from "./model/plans";
+export { PRO_PRICE, FREE_FEATURES, PRO_FEATURES } from "./model/plans";
 export {
-  useMySubscription,
-  useMyPayments,
+  useOrgSubscription,
+  useOrgPayments,
   useCreateCheckout,
   useCancelSubscription,
 } from "./model/queries";

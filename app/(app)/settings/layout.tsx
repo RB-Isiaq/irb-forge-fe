@@ -4,10 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/shared/lib";
 
-const tabs = [
-  { label: "Account", href: "/settings" },
-  { label: "Billing", href: "/settings/billing" },
-];
+const tabs = [{ label: "Account", href: "/settings" }];
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

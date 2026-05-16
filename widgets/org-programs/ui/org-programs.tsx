@@ -9,7 +9,7 @@ import { useMyRole } from "@/entities/member";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { CreateProgramForm } from "@/features/org/create-program/ui/create-program-form";
 
 const statusBadge: Record<ProgramStatus, "outline" | "success" | "default" | "warning"> = {
@@ -95,7 +95,28 @@ export function OrgPrograms({ slug }: { slug: string }) {
     [programs, enrollmentMap]
   );
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading) {
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-start gap-4 px-5 py-4 rounded-xl border border-border bg-surface"
+          >
+            <Skeleton className="h-10 w-10 rounded-[10px] shrink-0" />
+            <div className="flex-1 space-y-2">
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-5 w-14 rounded-full" />
+              </div>
+              <Skeleton className="h-3 w-full" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-5">

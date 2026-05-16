@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 import { cn } from "@/shared/lib";
 import { Sidebar } from "@/widgets/sidebar";
 import { UnverifiedBanner } from "@/widgets/unverified-banner";
+import { ErrorBoundary } from "@/shared/ui/error-boundary";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [collapsed, setCollapsed] = useState(
@@ -62,7 +63,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         <UnverifiedBanner />
-        <main className="flex-1 p-4 sm:p-6 bg-bg">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 bg-bg">
+          <ErrorBoundary>{children}</ErrorBoundary>
+        </main>
       </div>
     </div>
   );

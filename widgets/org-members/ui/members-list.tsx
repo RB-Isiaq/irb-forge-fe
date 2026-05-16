@@ -2,7 +2,7 @@
 
 import { Trash2 } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { Avatar } from "@/entities/user/ui/avatar";
 import {
   useMembers,
@@ -36,7 +36,25 @@ export function MembersList({ slug }: { slug: string }) {
   const myUserId = myMembership?.userId ?? null;
   const canManage = myRole === "owner" || myRole === "admin";
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-border bg-surface overflow-hidden">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div
+            key={i}
+            className={`flex items-center gap-3 px-5 py-3.5 ${i < 3 ? "border-b border-border" : ""}`}
+          >
+            <Skeleton className="h-7 w-7 rounded-full shrink-0" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-3.5 w-28" />
+              <Skeleton className="h-3 w-40" />
+            </div>
+            <Skeleton className="h-5 w-14 rounded-full" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   if (!members?.length) {
     return (

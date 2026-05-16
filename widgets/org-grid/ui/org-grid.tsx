@@ -4,13 +4,31 @@ import Link from "next/link";
 import { Building2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { useOrgs } from "@/entities/org";
 
 export function OrgGrid() {
   const { data: orgs, isLoading } = useOrgs();
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="rounded-xl border border-border bg-surface p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <Skeleton className="h-9 w-9 shrink-0" />
+              <div className="flex-1 space-y-1.5">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            </div>
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-3/4 mt-1.5" />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   if (!orgs?.length) {
     return (

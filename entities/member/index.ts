@@ -1,6 +1,7 @@
 export type { OrgRole, Membership, UpdateMemberRolePayload } from "./model/types";
 export {
   useMembers,
+  useMyMembership,
   useMyRole,
   useUpdateMemberRole,
   useRemoveMember,

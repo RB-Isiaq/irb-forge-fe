@@ -8,7 +8,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { PageSpinner } from "@/shared/ui/spinner";
 import { useOrgInvitations, useCancelInvitation, useResendInvitation } from "@/entities/invitation";
 import { useMyRole } from "@/entities/member";
-import { useAuth } from "@/entities/user";
 import { InviteMemberForm } from "@/features/org/invite-member/ui/invite-member-form";
 
 export function InvitationsTable({ slug }: { slug: string }) {
@@ -16,8 +15,7 @@ export function InvitationsTable({ slug }: { slug: string }) {
   const { data: invitations, isLoading } = useOrgInvitations(slug);
   const cancel = useCancelInvitation(slug);
   const resend = useResendInvitation(slug);
-  const { user } = useAuth();
-  const myRole = useMyRole(slug, user?.id);
+  const myRole = useMyRole(slug);
   const canManage = myRole === "owner" || myRole === "admin";
 
   if (isLoading) return <PageSpinner />;

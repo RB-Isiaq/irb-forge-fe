@@ -19,7 +19,21 @@ import {
   Sparkles,
   ChevronRight,
 } from "lucide-react";
-import { PRO_PRICE } from "@/entities/subscription";
+import {
+  SiSlack,
+  SiDiscord,
+  SiNotion,
+  SiStripe,
+  SiMailchimp,
+  SiAirtable,
+  SiCalendly,
+} from "react-icons/si";
+import {
+  PRO_PRICE,
+  PRO_ORIGINAL_PRICE,
+  PRO_DISCOUNT_PCT,
+  formatNaira,
+} from "@/entities/subscription";
 
 /* ── Animation helpers ───────────────────────────────────────── */
 
@@ -392,13 +406,13 @@ function HeroSection() {
 /* ── Problem strip ───────────────────────────────────────────── */
 
 const TOOLS = [
-  "Slack / Discord",
-  "Notion",
-  "Airtable",
-  "Stripe",
-  "Mailchimp",
-  "Calendly",
-  "Google Sheets",
+  { name: "Slack", Icon: SiSlack, color: "#E01E5A" },
+  { name: "Discord", Icon: SiDiscord, color: "#5865F2" },
+  { name: "Notion", Icon: SiNotion, color: "#FFFFFF" },
+  { name: "Stripe", Icon: SiStripe, color: "#635BFF" },
+  { name: "Mailchimp", Icon: SiMailchimp, color: "#FFE01B" },
+  { name: "Airtable", Icon: SiAirtable, color: "#18BFFF" },
+  { name: "Calendly", Icon: SiCalendly, color: "#006BFF" },
 ];
 
 function ProblemSection() {
@@ -416,11 +430,11 @@ function ProblemSection() {
         </FadeUp>
 
         <StaggerGrid className="flex flex-wrap justify-center gap-3 mb-10">
-          {TOOLS.map((tool) => (
-            <StaggerItem key={tool}>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/3 text-gray-500 text-[13px] font-medium">
-                <span className="h-1.5 w-1.5 rounded-full bg-red-500/60 shrink-0" />
-                {tool}
+          {TOOLS.map(({ name, Icon, color }) => (
+            <StaggerItem key={name}>
+              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-white/10 bg-white/3 hover:bg-white/6 hover:border-white/20 transition-colors">
+                <Icon size={16} style={{ color }} className="shrink-0" />
+                <span className="text-[13px] font-medium text-gray-400">{name}</span>
               </div>
             </StaggerItem>
           ))}
@@ -636,7 +650,7 @@ function PricingSection() {
             <div className="p-8 rounded-2xl border border-gray-200 bg-gray-50 h-full flex flex-col">
               <p className="text-[15px] font-semibold text-gray-950 mb-1">Free</p>
               <div className="flex items-end gap-1 mb-1">
-                <span className="text-[42px] font-bold text-gray-950 leading-none">$0</span>
+                <span className="text-[42px] font-bold text-gray-950 leading-none">₦0</span>
               </div>
               <p className="text-[13px] text-gray-400 mb-6">No credit card required</p>
               <ul className="space-y-3 flex-1 mb-8">
@@ -659,13 +673,23 @@ function PricingSection() {
           {/* Pro */}
           <StaggerItem>
             <div className="relative p-8 rounded-2xl border-2 border-primary bg-primary/[0.02] h-full flex flex-col shadow-xl shadow-primary/10">
-              <span className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-primary text-white text-[12px] font-semibold">
-                Recommended
-              </span>
+              <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 flex items-center gap-2">
+                <span className="px-4 py-1 rounded-full bg-amber-500 text-white text-[12px] font-semibold whitespace-nowrap">
+                  🎉 Launch offer — {PRO_DISCOUNT_PCT}% off
+                </span>
+              </div>
               <p className="text-[15px] font-semibold text-gray-950 mb-1">Pro</p>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[15px] text-gray-400 line-through">
+                  {formatNaira(PRO_ORIGINAL_PRICE)}
+                </span>
+                <span className="text-[12px] font-semibold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md">
+                  Save {formatNaira(PRO_ORIGINAL_PRICE - PRO_PRICE)}
+                </span>
+              </div>
               <div className="flex items-end gap-1 mb-1">
                 <span className="text-[42px] font-bold text-gray-950 leading-none">
-                  ${PRO_PRICE}
+                  {formatNaira(PRO_PRICE)}
                 </span>
                 <span className="text-[15px] text-gray-400 mb-2">/mo</span>
               </div>

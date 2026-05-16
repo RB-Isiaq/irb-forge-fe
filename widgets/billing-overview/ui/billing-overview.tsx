@@ -7,8 +7,13 @@ import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import {
   PRO_PRICE,
+  PRO_ORIGINAL_PRICE,
+  PRO_DISCOUNT_PCT,
+  PRO_CURRENCY_SYMBOL,
   FREE_FEATURES,
   PRO_FEATURES,
+  formatNaira,
+  formatPaymentAmount,
   useOrgSubscription,
   useOrgPayments,
   useCreateCheckout,
@@ -144,19 +149,25 @@ export function BillingOverview({ slug }: { slug: string }) {
             )}
           >
             {!isPro && (
-              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-primary text-white text-[11px] font-semibold whitespace-nowrap">
-                Recommended
+              <span className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 rounded-full bg-amber-500 text-white text-[11px] font-semibold whitespace-nowrap">
+                Launch offer — {PRO_DISCOUNT_PCT}% off
               </span>
             )}
             <div className="flex items-center justify-between mb-1">
               <p className="text-[15px] font-semibold text-text-primary">Pro</p>
               {isPro && <Badge variant="primary">Current</Badge>}
             </div>
+            {!isPro && (
+              <p className="text-[13px] text-text-muted line-through mb-0.5">
+                {PRO_CURRENCY_SYMBOL}
+                {PRO_ORIGINAL_PRICE.toLocaleString("en-NG")}
+              </p>
+            )}
             <div className="flex items-end gap-1 mb-1">
-              <p className="text-[26px] font-bold text-text-primary">${PRO_PRICE}</p>
+              <p className="text-[26px] font-bold text-text-primary">{formatNaira(PRO_PRICE)}</p>
               <p className="text-[13px] text-text-muted mb-1">/month</p>
             </div>
-            <p className="text-[12px] text-text-muted mb-4">Billed monthly, cancel anytime</p>
+            <p className="text-[12px] text-text-muted mb-4">Billed monthly · cancel anytime</p>
             <ul className="space-y-1.5 flex-1 mb-5">
               {PRO_FEATURES.map((f) => (
                 <li key={f} className="flex items-start gap-2 text-[13px] text-text-secondary">
@@ -202,13 +213,11 @@ export function BillingOverview({ slug }: { slug: string }) {
                 )}
               >
                 <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-medium text-text-primary capitalize">
-                    {p.currency.toUpperCase()} subscription
-                  </p>
+                  <p className="text-[13px] font-medium text-text-primary">Pro subscription</p>
                   <p className="text-[12px] text-text-muted">{timeAgo(p.createdAt)}</p>
                 </div>
                 <p className="text-[13px] font-semibold text-text-primary shrink-0">
-                  ${(p.amount / 100).toFixed(2)}
+                  {formatPaymentAmount(p.amount, p.currency)}
                 </p>
                 <Badge
                   variant={

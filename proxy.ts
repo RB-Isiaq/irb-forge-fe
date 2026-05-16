@@ -50,11 +50,14 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  /* Root redirect */
+  /* Landing page — always public; authenticated users go to dashboard */
   if (pathname === "/") {
-    const url = request.nextUrl.clone();
-    url.pathname = hasSessionHint ? "/dashboard" : "/login";
-    return NextResponse.redirect(url);
+    if (hasSessionHint) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url);
+    }
+    return NextResponse.next();
   }
 
   return NextResponse.next();

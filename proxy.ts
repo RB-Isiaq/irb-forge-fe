@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 const PUBLIC_ROUTES = new Set([
+  "/",
   "/login",
   "/register",
   "/verify-email",

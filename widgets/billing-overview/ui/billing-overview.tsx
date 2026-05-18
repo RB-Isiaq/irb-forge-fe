@@ -1,10 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { Check, Zap, AlertTriangle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
 import {
   PRO_PRICE,
   PRO_ORIGINAL_PRICE,
@@ -30,6 +32,7 @@ const statusVariant = {
 } as const;
 
 export function BillingOverview({ slug }: { slug: string }) {
+  const [cancelOpen, setCancelOpen] = useState(false);
   const { data: subscription, isLoading } = useOrgSubscription(slug);
   const { data: paymentsPage } = useOrgPayments(slug);
   const checkout = useCreateCheckout(slug);
@@ -90,20 +93,7 @@ export function BillingOverview({ slug }: { slug: string }) {
               </div>
 
               {isOwner && isPro && (
-                <Button
-                  size="sm"
-                  variant="secondary"
-                  loading={cancel.isPending}
-                  onClick={() => {
-                    if (
-                      confirm(
-                        "Cancel subscription? This is immediate — your org reverts to Free right now. No refund is issued."
-                      )
-                    ) {
-                      cancel.mutate();
-                    }
-                  }}
-                >
+                <Button size="sm" variant="secondary" onClick={() => setCancelOpen(true)}>
                   Cancel subscription
                 </Button>
               )}
@@ -129,7 +119,7 @@ export function BillingOverview({ slug }: { slug: string }) {
               <p className="text-[15px] font-semibold text-text-primary">Free</p>
               {!isPro && <Badge variant="primary">Current</Badge>}
             </div>
-            <p className="text-[26px] font-bold text-text-primary mb-1">$0</p>
+            <p className="text-[26px] font-bold text-text-primary mb-1">{PRO_CURRENCY_SYMBOL}0</p>
             <p className="text-[12px] text-text-muted mb-4">No credit card required</p>
             <ul className="space-y-1.5 flex-1">
               {FREE_FEATURES.map((f) => (
@@ -192,6 +182,17 @@ export function BillingOverview({ slug }: { slug: string }) {
           </div>
         </div>
       </section>
+
+      <ConfirmDialog
+        open={cancelOpen}
+        onOpenChange={setCancelOpen}
+        title="Cancel subscription?"
+        description="This is immediate — your org reverts to Free right now. No refund is issued."
+        confirmLabel="Yes, cancel"
+        variant="danger"
+        loading={cancel.isPending}
+        onConfirm={() => cancel.mutate(undefined, { onSettled: () => setCancelOpen(false) })}
+      />
 
       {/* Payment history */}
       <section>

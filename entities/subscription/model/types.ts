@@ -1,3 +1,5 @@
+import type { PaginatedData } from "@/shared/lib";
+
 export type OrgPlan = "free" | "pro";
 export type SubscriptionStatus = "active" | "past_due" | "trialing" | "cancelled";
 
@@ -22,13 +24,7 @@ export interface Payment {
   createdAt: string;
 }
 
-export interface PaginatedPayments {
-  items: Payment[];
-  total: number;
-  page: number;
-  limit: number;
-  pages: number;
-}
+export type PaginatedPayments = PaginatedData<Payment>;
 
 export interface CheckoutSession {
   url: string;

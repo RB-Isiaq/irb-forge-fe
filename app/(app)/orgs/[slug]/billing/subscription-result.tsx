@@ -16,10 +16,10 @@ export function SubscriptionResult({ slug }: { slug: string }) {
     if (result === "success") {
       toast.success("You're now on Pro — full access unlocked!");
       queryClient.invalidateQueries({ queryKey: queryKeys.subscription.byOrg(slug) });
-      router.replace(`/orgs/${slug}/settings`);
+      router.replace(`/orgs/${slug}/billing`);
     } else if (result === "cancelled") {
       toast("Checkout cancelled. No payment was made.");
-      router.replace(`/orgs/${slug}/settings`);
+      router.replace(`/orgs/${slug}/billing`);
     }
   }, [result, slug, queryClient, router]);
 

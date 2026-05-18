@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
 import { Avatar } from "@/entities/user/ui/avatar";
 import {
   useMembers,
@@ -27,6 +29,7 @@ const ROLE_OPTIONS: Array<{ value: Exclude<OrgRole, "owner">; label: string }> =
 ];
 
 export function MembersList({ slug }: { slug: string }) {
+  const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
   const { data: members, isLoading } = useMembers(slug);
   const { data: myMembership } = useMyMembership(slug);
   const updateRole = useUpdateMemberRole(slug);
@@ -56,7 +59,7 @@ export function MembersList({ slug }: { slug: string }) {
     );
   }
 
-  if (!members?.length) {
+  if (!members?.items.length) {
     return (
       <div className="rounded-xl border border-border bg-surface px-6 py-12 text-center">
         <p className="text-[14px] text-text-muted">No members yet.</p>
@@ -64,12 +67,13 @@ export function MembersList({ slug }: { slug: string }) {
     );
   }
 
+  const items = members.items;
+
   return (
     <div className="rounded-xl border border-border bg-surface overflow-hidden">
-      {members.map((m, i) => {
+      {items.map((m, i) => {
         const isOwnerRow = m.role === "owner";
         const isSelf = m.userId === myUserId;
-        // Admins can manage non-owners but not other admins (only owners can manage admins)
         const canActOnRow =
           canManage && !isOwnerRow && !isSelf && !(myRole === "admin" && m.role === "admin");
         const displayName = getDisplayName(m.user.firstName, m.user.lastName, m.user.email);
@@ -77,7 +81,7 @@ export function MembersList({ slug }: { slug: string }) {
         return (
           <div
             key={m.id}
-            className={`flex items-center gap-3 px-5 py-3.5 ${i < members.length - 1 ? "border-b border-border" : ""}`}
+            className={`flex items-center gap-3 px-5 py-3.5 ${i < items.length - 1 ? "border-b border-border" : ""}`}
           >
             <Avatar firstName={m.user.firstName} lastName={m.user.lastName} size="sm" />
 
@@ -115,13 +119,8 @@ export function MembersList({ slug }: { slug: string }) {
             {canActOnRow && (
               <button
                 type="button"
-                onClick={() => {
-                  if (confirm(`Remove ${displayName} from this organization?`)) {
-                    remove.mutate(m.userId);
-                  }
-                }}
-                disabled={remove.isPending}
-                className="p-1.5 rounded-md text-text-muted hover:text-error hover:bg-error/5 transition-colors disabled:opacity-40 shrink-0"
+                onClick={() => setRemoveTarget({ id: m.userId, name: displayName })}
+                className="p-1.5 rounded-md text-text-muted hover:text-error hover:bg-error/5 transition-colors shrink-0"
                 aria-label="Remove member"
                 title="Remove member"
               >
@@ -131,6 +130,30 @@ export function MembersList({ slug }: { slug: string }) {
           </div>
         );
       })}
+      {members.total > items.length && (
+        <div className="px-5 py-3 border-t border-border">
+          <p className="text-[12px] text-text-muted">
+            Showing {items.length} of {members.total} members
+          </p>
+        </div>
+      )}
+
+      <ConfirmDialog
+        open={removeTarget !== null}
+        onOpenChange={(open) => {
+          if (!open) setRemoveTarget(null);
+        }}
+        title={`Remove ${removeTarget?.name ?? "member"}?`}
+        description="They'll lose access to this organization immediately."
+        confirmLabel="Remove member"
+        variant="danger"
+        loading={remove.isPending}
+        onConfirm={() => {
+          if (removeTarget) {
+            remove.mutate(removeTarget.id, { onSettled: () => setRemoveTarget(null) });
+          }
+        }}
+      />
     </div>
   );
 }

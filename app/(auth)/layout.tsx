@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Logo } from "@/shared/ui/logo";
+import { RedirectIfAuthed } from "./_redirect-if-authed";
 
 export const metadata: Metadata = {
   title: {
@@ -11,14 +13,10 @@ export const metadata: Metadata = {
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-full flex flex-col items-center justify-center bg-bg px-4 py-12">
+      <RedirectIfAuthed />
       {/* Logo */}
-      <Link href="/" className="mb-8 flex items-center gap-2.5 group">
-        <div className="h-8 w-8 rounded-sm bg-primary flex items-center justify-center">
-          <span className="text-white font-bold text-[16px] leading-none">F</span>
-        </div>
-        <span className="text-[18px] font-bold text-text-primary group-hover:text-primary transition-colors">
-          IRB Forge
-        </span>
+      <Link href="/" className="mb-8 hover:opacity-80 transition-opacity">
+        <Logo markSize={32} />
       </Link>
 
       {/* Card container */}

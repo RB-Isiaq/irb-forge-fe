@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import { tokenStore } from "@/shared/api";
+import { tokenStore, silentRefresh } from "@/shared/api";
 import type { User, LoginPayload, RegisterPayload, GoogleSignInPayload } from "./types";
 
 interface AuthState {
@@ -15,6 +15,10 @@ interface AuthState {
   refreshSession: () => Promise<void>;
   setUser: (user: User) => void;
 }
+
+// Module-level guard — prevents concurrent refreshSession calls (e.g. StrictMode
+// double-invoke, or two components calling it simultaneously on mount).
+let sessionRefreshInFlight = false;
 
 async function getApi() {
   const { userApi } = await import("../api");
@@ -87,18 +91,29 @@ export const useAuthStore = create<AuthState>()((set) => ({
   },
 
   refreshSession: async () => {
+    if (sessionRefreshInFlight) return;
+    sessionRefreshInFlight = true;
+
     const refreshToken = tokenStore.getRefresh();
     if (!refreshToken) {
       set({ isInitialized: true });
+      sessionRefreshInFlight = false;
       return;
     }
     const api = await getApi();
     try {
+      const ok = await silentRefresh();
+      if (!ok) {
+        set({ isInitialized: true });
+        return;
+      }
       const user = await api.getProfile();
       set({ user, isInitialized: true });
     } catch {
       tokenStore.clear();
       set({ user: null, isInitialized: true });
+    } finally {
+      sessionRefreshInFlight = false;
     }
   },
 }));

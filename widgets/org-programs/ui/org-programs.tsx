@@ -85,14 +85,16 @@ export function OrgPrograms({ slug }: { slug: string }) {
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
   const isMember = myRole === "member";
 
+  const programItems = useMemo(() => programs?.items ?? [], [programs?.items]);
+
   const enrollmentMap = useMemo(
     () => Object.fromEntries((myEnrollments ?? []).map((e) => [e.programId, e.status])),
     [myEnrollments]
   );
 
   const myPrograms = useMemo(
-    () => (programs ?? []).filter((p) => enrollmentMap[p.id]),
-    [programs, enrollmentMap]
+    () => programItems.filter((p) => enrollmentMap[p.id]),
+    [programItems, enrollmentMap]
   );
 
   if (isLoading) {
@@ -166,7 +168,7 @@ export function OrgPrograms({ slug }: { slug: string }) {
       )}
 
       {/* All programs */}
-      {!programs?.length ? (
+      {!programItems.length ? (
         <Card>
           <CardContent className="py-16 text-center">
             <BookOpen size={36} className="mx-auto text-text-muted mb-3" strokeWidth={1.5} />
@@ -185,7 +187,7 @@ export function OrgPrograms({ slug }: { slug: string }) {
               All programs
             </p>
           )}
-          {programs.map((program) => (
+          {programItems.map((program) => (
             <ProgramCard
               key={program.id}
               program={program}
@@ -193,6 +195,11 @@ export function OrgPrograms({ slug }: { slug: string }) {
               myEnrollmentStatus={enrollmentMap[program.id]}
             />
           ))}
+          {programs && programs.total > programItems.length && (
+            <p className="text-[12px] text-text-muted text-center pt-1">
+              Showing {programItems.length} of {programs.total} programs
+            </p>
+          )}
         </div>
       )}
     </div>

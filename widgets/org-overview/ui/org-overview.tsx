@@ -10,7 +10,7 @@ import { useMessages } from "@/entities/message";
 import { useMyEnrollmentsInOrg } from "@/entities/enrollment";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { getDisplayName, timeAgo } from "@/shared/lib";
 
 /* ── Stat card ───────────────────────────────────────────────── */
@@ -30,7 +30,7 @@ function StatCard({
 }) {
   return (
     <Link href={href}>
-      <div className="p-5 rounded-xl border border-border bg-surface hover:border-primary/40 hover:bg-primary/[0.01] transition-colors cursor-pointer">
+      <div className="p-5 rounded-xl border border-border bg-surface hover:border-primary/40 hover:bg-primary/1 transition-colors cursor-pointer">
         <div className="flex items-start justify-between gap-2 mb-3">
           <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
             <Icon size={17} className="text-primary" strokeWidth={1.8} />
@@ -38,7 +38,7 @@ function StatCard({
           <span className="text-[28px] font-bold text-text-primary leading-none">{value}</span>
         </div>
         <p className="text-[13px] font-medium text-text-primary">{label}</p>
-        {sub && <p className="text-[11px] text-text-muted mt-0.5">{sub}</p>}
+        <p className="text-[11px] text-text-muted mt-0.5 h-4">{sub}</p>
       </div>
     </Link>
   );
@@ -57,13 +57,52 @@ export function OrgOverview({ slug }: { slug: string }) {
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
   const isMember = myRole === "member";
 
-  const memberCount = members?.length ?? 0;
-  const totalPrograms = programs?.length ?? 0;
-  const activePrograms = programs?.filter((p) => p.status === "active").length ?? 0;
-  const recentMessages = messages?.slice(0, 3) ?? [];
+  const memberCount = members?.total ?? 0;
+  const totalPrograms = programs?.total ?? 0;
+  const activePrograms = programs?.items.filter((p) => p.status === "active").length ?? 0;
+  const recentMessages = messages?.items.slice(0, 3) ?? [];
   const activeEnrollments = (myEnrollments ?? []).filter((e) => e.status === "active");
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading)
+    return (
+      <div className="space-y-8">
+        {/* Org title */}
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-48" />
+          <Skeleton className="h-4 w-80" />
+        </div>
+        {/* Stat cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="p-5 rounded-xl border border-border bg-surface">
+              <div className="flex items-start justify-between mb-3">
+                <Skeleton className="h-9 w-9 rounded-lg" />
+                <Skeleton className="h-7 w-10" />
+              </div>
+              <Skeleton className="h-3.5 w-20" />
+            </div>
+          ))}
+        </div>
+        {/* Recent announcements */}
+        <div className="space-y-3">
+          <Skeleton className="h-4 w-36" />
+          <Card>
+            <CardContent className="pt-4 pb-0">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className={`py-4 ${i < 1 ? "border-b border-border" : ""}`}>
+                  <div className="flex justify-between mb-2">
+                    <Skeleton className="h-3.5 w-24" />
+                    <Skeleton className="h-3 w-14" />
+                  </div>
+                  <Skeleton className="h-3 w-full mb-1.5" />
+                  <Skeleton className="h-3 w-3/4" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
   if (!org) return null;
 
   return (
@@ -89,7 +128,7 @@ export function OrgOverview({ slug }: { slug: string }) {
         <StatCard
           href={`/orgs/${slug}/messages`}
           icon={Megaphone}
-          value={messages?.length ?? 0}
+          value={messages?.total ?? 0}
           label="Announcements"
         />
       </div>
@@ -125,7 +164,7 @@ export function OrgOverview({ slug }: { slug: string }) {
               {activeEnrollments.slice(0, 4).map((e, i) => (
                 <Link key={e.id} href={`/orgs/${slug}/programs/${e.programId}`}>
                   <div
-                    className={`flex items-center gap-3 px-5 py-3.5 hover:bg-primary/[0.02] transition-colors ${i < Math.min(activeEnrollments.length, 4) - 1 ? "border-b border-border" : ""}`}
+                    className={`flex items-center gap-3 px-5 py-3.5 hover:bg-primary/2 transition-colors ${i < Math.min(activeEnrollments.length, 4) - 1 ? "border-b border-border" : ""}`}
                   >
                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                       <BookOpen size={14} className="text-primary" strokeWidth={1.8} />
@@ -214,7 +253,7 @@ export function OrgOverview({ slug }: { slug: string }) {
               { label: "Send announcement", href: `/orgs/${slug}/messages`, icon: Megaphone },
             ].map(({ label, href, icon: Icon }) => (
               <Link key={href} href={href}>
-                <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border bg-surface hover:border-primary/40 hover:bg-primary/[0.01] transition-colors cursor-pointer">
+                <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl border border-border bg-surface hover:border-primary/40 hover:bg-primary/1 transition-colors cursor-pointer">
                   <Icon size={15} className="text-primary shrink-0" strokeWidth={1.8} />
                   <span className="text-[13px] font-medium text-text-primary">{label}</span>
                 </div>

@@ -32,6 +32,7 @@ import {
   PRO_DISCOUNT_PCT,
   formatNaira,
 } from "@/entities/subscription";
+import { Logo, LogoMark } from "@/shared/ui/logo";
 
 /* ── Animation helpers ───────────────────────────────────────── */
 
@@ -113,11 +114,8 @@ function MarketingNav() {
         style={{ opacity: bgOpacity }}
       />
       <div className="relative max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="h-7 w-7 rounded-sm bg-primary flex items-center justify-center">
-            <span className="text-white font-bold text-[13px]">F</span>
-          </div>
-          <span className="text-[15px] font-bold text-white">IRB Forge</span>
+        <Link href="/" className="shrink-0">
+          <Logo variant="light" markSize={24} />
         </Link>
 
         <nav className="hidden md:flex items-center gap-7">
@@ -218,9 +216,7 @@ function AppMockup() {
         <div className="flex h-72">
           <div className="w-36 bg-[#0d0b14] border-r border-white/5 p-2.5 flex flex-col gap-0.5 shrink-0">
             <div className="flex items-center gap-2 px-2 py-2 mb-2">
-              <div className="h-5 w-5 rounded-sm bg-primary/80 flex items-center justify-center shrink-0">
-                <span className="text-white text-[9px] font-bold">F</span>
-              </div>
+              <LogoMark size={16} />
               <div className="h-2 w-14 bg-white/25 rounded" />
             </div>
             {[
@@ -304,7 +300,7 @@ const COMMUNITY_TYPES = [
   "Coding bootcamps",
   "Alumni networks",
   "Startup incubators",
-  "Dev communities",
+  // "Dev communities",
   "Mentorship circles",
 ];
 
@@ -313,44 +309,26 @@ function HeroSection() {
     <section className="relative min-h-screen flex items-center bg-[#0d0b14] overflow-hidden pt-16">
       <div className="absolute inset-0 pointer-events-none">
         <div
-          className="absolute inset-0 opacity-30"
+          className="absolute inset-0 opacity-20"
           style={{
             backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px)",
-            backgroundSize: "28px 28px",
+            backgroundSize: "32px 32px",
           }}
         />
-        {/* Warm purple glow — slightly off-center for organic feel */}
-        <div className="absolute -top-24 left-1/3 h-[600px] w-[700px] bg-primary/12 rounded-full blur-[130px]" />
-        {/* Subtle warm amber hint in the corner */}
-        <div className="absolute top-32 right-0 h-[300px] w-[300px] bg-amber-600/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-0 left-0 h-[200px] w-[400px] bg-violet-800/8 rounded-full blur-[80px]" />
+        <div className="absolute -top-24 left-1/4 h-[700px] w-[700px] bg-primary/10 rounded-full blur-[140px]" />
+        <div className="absolute top-40 right-0 h-[280px] w-[280px] bg-amber-600/4 rounded-full blur-[100px]" />
+        <div className="absolute bottom-0 left-0 h-[180px] w-[350px] bg-violet-800/6 rounded-full blur-[80px]" />
         <div className="absolute bottom-0 inset-x-0 h-48 bg-gradient-to-t from-[#0d0b14] to-transparent" />
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-24 lg:py-32 w-full">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-28 lg:py-36 w-full">
+        <div className="grid lg:grid-cols-[1fr_1fr] gap-10 items-center">
           <motion.div variants={stagger} initial="hidden" animate="visible">
-            <motion.div variants={fadeUp}>
-              <div className="flex flex-wrap gap-2 mb-8">
-                {COMMUNITY_TYPES.map((t) => (
-                  <span
-                    key={t}
-                    className="px-2.5 py-1 rounded-full border border-white/10 bg-white/4 text-gray-400 text-[11px] font-medium"
-                  >
-                    {t}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-
             <motion.h1
               variants={fadeUp}
-              className="text-[46px] sm:text-[56px] lg:text-[62px] font-bold text-white leading-[1.08] tracking-tight mb-6"
+              className="text-[40px] sm:text-[50px] lg:text-[54px] font-bold text-white leading-[1.1] tracking-tight mb-5"
             >
-              Your community
-              <br />
-              deserves better than
-              <br />
+              Your community <br /> deserves better than <br />
               <span className="bg-gradient-to-r from-primary via-violet-400 to-indigo-300 bg-clip-text text-transparent">
                 six browser tabs.
               </span>
@@ -358,13 +336,24 @@ function HeroSection() {
 
             <motion.p
               variants={fadeUp}
-              className="text-[17px] text-gray-400 max-w-xl mb-8 leading-relaxed"
+              className="text-[16px] text-gray-400 max-w-lg mb-5 leading-relaxed"
             >
-              IRB Forge brings your org management, cohort programs, member invitations, and
-              payments into one place your whole team can actually use. No more duct tape.
+              IRB Forge brings org management, cohort programs, member invitations, and payments
+              into one place your whole team can actually use.
             </motion.p>
 
-            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 mb-6">
+            <motion.div variants={fadeUp} className="flex flex-wrap gap-1.5 mb-8">
+              {COMMUNITY_TYPES.map((t) => (
+                <span
+                  key={t}
+                  className="px-2.5 py-1 rounded-full border border-white/8 bg-white/[0.03] text-gray-500 text-[11px] font-medium hover:bg-white/10 transition-colors"
+                >
+                  {t}
+                </span>
+              ))}
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row gap-3 mb-5">
               <Link
                 href="/register"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-primary text-white text-[15px] font-semibold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
@@ -374,15 +363,15 @@ function HeroSection() {
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-white/15 text-white text-[15px] font-medium hover:bg-white/5 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl border border-white/12 text-gray-300 text-[15px] font-medium hover:bg-white/5 transition-colors"
               >
                 Already have an account
               </Link>
             </motion.div>
 
-            <motion.p variants={fadeUp} className="text-[13px] text-gray-600">
+            {/* <motion.p variants={fadeUp} className="text-[12px] text-gray-600">
               Takes about 60 seconds to set up. Seriously.
-            </motion.p>
+            </motion.p> */}
           </motion.div>
 
           <motion.div
@@ -428,16 +417,21 @@ function ProblemSection() {
           </p>
         </FadeUp>
 
-        <StaggerGrid className="flex flex-wrap justify-center gap-3 mb-12">
-          {TOOLS.map(({ name, Icon, color }) => (
-            <StaggerItem key={name}>
-              <div className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-white/10 bg-white/3 hover:bg-white/6 hover:border-white/20 transition-colors">
-                <Icon size={16} style={{ color }} className="shrink-0" />
-                <span className="text-[13px] font-medium text-gray-400">{name}</span>
+        <div className="mb-12 overflow-hidden marquee-fade">
+          <div className="flex gap-3 w-max marquee-track">
+            {[...TOOLS, ...TOOLS].map(({ name, Icon, color }, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-white/10 bg-white/3 shrink-0"
+              >
+                <Icon size={15} style={{ color }} className="shrink-0" />
+                <span className="text-[13px] font-medium text-gray-400 hover:text-gray-100">
+                  {name}
+                </span>
               </div>
-            </StaggerItem>
-          ))}
-        </StaggerGrid>
+            ))}
+          </div>
+        </div>
 
         <FadeUp delay={0.1}>
           <div className="flex items-center justify-center gap-4">
@@ -504,7 +498,7 @@ const FEATURES = [
 
 function FeaturesSection() {
   return (
-    <section id="features" className="bg-[#fafaf8] py-24 sm:py-32">
+    <section id="features" className="bg-[#fafaf8] py-24 sm:py-32 scroll-mt-16">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <FadeUp className="text-center mb-16">
           <p className="text-[13px] font-semibold text-primary uppercase tracking-widest mb-3">
@@ -571,7 +565,10 @@ const STEPS = [
 
 function HowItWorksSection() {
   return (
-    <section id="how-it-works" className="bg-[#f4f2ec] py-24 sm:py-32 border-t border-gray-200/60">
+    <section
+      id="how-it-works"
+      className="bg-[#f4f2ec] py-24 sm:py-32 border-t border-gray-200/60 scroll-mt-16"
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <FadeUp className="text-center mb-16">
           <p className="text-[13px] font-semibold text-primary uppercase tracking-widest mb-3">
@@ -702,7 +699,10 @@ const PRO_PLAN_FEATURES = [
 
 function PricingSection() {
   return (
-    <section id="pricing" className="bg-[#fafaf8] py-24 sm:py-32 border-t border-gray-200/60">
+    <section
+      id="pricing"
+      className="bg-[#fafaf8] py-24 sm:py-32 border-t border-gray-200/60 scroll-mt-16"
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <FadeUp className="text-center mb-16">
           <p className="text-[13px] font-semibold text-primary uppercase tracking-widest mb-3">
@@ -885,11 +885,8 @@ function MarketingFooter() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
           <div className="col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-2 mb-4">
-              <div className="h-7 w-7 rounded-sm bg-primary flex items-center justify-center">
-                <span className="text-white font-bold text-[13px]">F</span>
-              </div>
-              <span className="text-[15px] font-bold text-white">IRB Forge</span>
+            <Link href="/" className="inline-block mb-4">
+              <Logo variant="light" markSize={24} />
             </Link>
             <p className="text-[13px] text-gray-600 leading-relaxed max-w-44">
               Built by someone who got tired of the six-tab Sunday night. Here for you.

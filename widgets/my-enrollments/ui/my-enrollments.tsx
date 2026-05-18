@@ -5,7 +5,7 @@ import { BookOpen } from "lucide-react";
 import { useMyEnrollmentsInOrg, type EnrollmentStatus } from "@/entities/enrollment";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
 
 const statusBadge: Record<EnrollmentStatus, "primary" | "success" | "outline"> = {
   active: "primary",
@@ -25,7 +25,24 @@ function formatDate(iso: string | null) {
 export function MyEnrollments({ slug }: { slug: string }) {
   const { data: enrollments, isLoading } = useMyEnrollmentsInOrg(slug);
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading)
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-4 px-5 py-3.5 rounded-xl border border-border bg-surface"
+          >
+            <Skeleton className="h-9 w-9 rounded-[10px] shrink-0" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-3.5 w-44" />
+              <Skeleton className="h-3 w-32" />
+            </div>
+            <Skeleton className="h-5 w-16 rounded-full" />
+          </div>
+        ))}
+      </div>
+    );
 
   if (!enrollments?.length) {
     return (

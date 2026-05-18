@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
 import {
   useMyInvitations,
   useAcceptInvitationById,
@@ -26,7 +26,26 @@ export function InvitationsInbox() {
   const accept = useAcceptInvitationById();
   const decline = useDeclineInvitationById();
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading)
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div
+            key={i}
+            className="rounded-xl border border-border bg-surface px-5 py-4 flex items-center gap-4"
+          >
+            <Skeleton className="h-10 w-10 rounded-[10px] shrink-0" />
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-3 w-56" />
+            </div>
+            <Skeleton className="h-5 w-14 rounded-full" />
+            <Skeleton className="h-8 w-20 rounded-lg" />
+            <Skeleton className="h-8 w-20 rounded-lg" />
+          </div>
+        ))}
+      </div>
+    );
 
   if (!invitations?.length) {
     return (

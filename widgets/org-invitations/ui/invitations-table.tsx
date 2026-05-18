@@ -5,7 +5,7 @@ import { Plus, Trash2, RefreshCw } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { useOrgInvitations, useCancelInvitation, useResendInvitation } from "@/entities/invitation";
 import { useMyRole } from "@/entities/member";
 import { InviteMemberForm } from "@/features/org/invite-member/ui/invite-member-form";
@@ -18,7 +18,25 @@ export function InvitationsTable({ slug }: { slug: string }) {
   const myRole = useMyRole(slug);
   const canManage = myRole === "owner" || myRole === "admin";
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading)
+    return (
+      <div className="rounded-xl border border-border bg-surface overflow-hidden">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div
+            key={i}
+            className={`flex items-center gap-3 px-5 py-3.5 ${i < 2 ? "border-b border-border" : ""}`}
+          >
+            <div className="flex-1 space-y-1.5">
+              <Skeleton className="h-3.5 w-40" />
+              <Skeleton className="h-3 w-24" />
+            </div>
+            <Skeleton className="h-5 w-14 rounded-full" />
+            <Skeleton className="h-6 w-6 rounded-md" />
+            <Skeleton className="h-6 w-6 rounded-md" />
+          </div>
+        ))}
+      </div>
+    );
 
   return (
     <div className="space-y-5">

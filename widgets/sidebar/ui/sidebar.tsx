@@ -26,6 +26,7 @@ import { useAuth } from "@/entities/user";
 import { useOrg } from "@/entities/org";
 import { useMyInvitations } from "@/entities/invitation";
 import { useMyRole } from "@/entities/member";
+import { LogoMark } from "@/shared/ui/logo";
 
 interface NavItem {
   label: string;
@@ -167,9 +168,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
           collapsed ? "lg:justify-center lg:px-0 lg:gap-0" : "lg:px-5 lg:gap-2.5"
         )}
       >
-        <div className="h-7 w-7 shrink-0 rounded-sm bg-primary flex items-center justify-center">
-          <span className="text-white font-bold text-[14px]">F</span>
-        </div>
+        <LogoMark size={26} className="shrink-0" />
         <span
           className={cn(
             "flex-1 text-[15px] font-bold text-text-primary whitespace-nowrap overflow-hidden transition-all duration-200",

@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { extractApiError } from "@/shared/api";
 import { queryKeys } from "@/shared/lib";
 import { memberApi } from "../api";
-import type { OrgRole, UpdateMemberRolePayload } from "./types";
+import type { OrgRole, UpdateMemberRolePayload, MyMembership } from "./types";
 
 export function useMembers(slug: string) {
   return useQuery({
@@ -45,7 +45,7 @@ export function useRemoveMember(slug: string) {
  * The backend resolves identity from the JWT — no userId param needed.
  */
 export function useMyMembership(slug: string) {
-  return useQuery({
+  return useQuery<MyMembership>({
     queryKey: queryKeys.members.me(slug),
     queryFn: () => memberApi.getMe(slug),
     enabled: !!slug,

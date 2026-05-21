@@ -12,6 +12,8 @@ export function useMessages(slug: string) {
     queryKey: queryKeys.messages.byOrg(slug),
     queryFn: () => messageApi.list(slug),
     enabled: !!slug,
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
   });
 }
 

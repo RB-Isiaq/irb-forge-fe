@@ -12,6 +12,7 @@ import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { PageSpinner } from "@/shared/ui/spinner";
 import type { InvitationPreview } from "@/entities/invitation";
+import { Logo } from "@/shared/ui/logo";
 
 function InvitationPreviewContent() {
   const searchParams = useSearchParams();
@@ -127,11 +128,8 @@ function InvitationPreviewContent() {
 export default function InvitationPreviewPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-12 bg-bg">
-      <Link href="/" className="mb-8 flex items-center gap-2.5">
-        <div className="h-8 w-8 rounded-sm bg-primary flex items-center justify-center">
-          <span className="text-white font-bold text-[16px]">F</span>
-        </div>
-        <span className="text-[18px] font-bold text-text-primary">IRB Forge</span>
+      <Link href="/" className="mb-8 hover:opacity-80 transition-opacity">
+        <Logo markSize={32} />
       </Link>
       <Suspense fallback={<PageSpinner />}>
         <InvitationPreviewContent />

@@ -4,8 +4,9 @@ import { Megaphone } from "lucide-react";
 import { useMessages } from "@/entities/message";
 import { useMyRole } from "@/entities/member";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { getDisplayName, timeAgo } from "@/shared/lib";
+import { MarkdownContent } from "@/shared/ui/markdown-content";
 import { SendMessageForm } from "@/features/org/send-message/ui/send-message-form";
 
 export function OrgAnnouncements({ slug }: { slug: string }) {
@@ -13,7 +14,24 @@ export function OrgAnnouncements({ slug }: { slug: string }) {
   const myRole = useMyRole(slug);
   const canPost = myRole === "owner" || myRole === "admin" || myRole === "mentor";
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading)
+    return (
+      <div className="space-y-3">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Card key={i}>
+            <CardContent className="pt-4">
+              <div className="flex justify-between mb-3">
+                <Skeleton className="h-3.5 w-28" />
+                <Skeleton className="h-3 w-14" />
+              </div>
+              <Skeleton className="h-3 w-full mb-1.5" />
+              <Skeleton className="h-3 w-5/6 mb-1.5" />
+              <Skeleton className="h-3 w-2/3" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
 
   return (
     <div className="space-y-5">
@@ -28,7 +46,7 @@ export function OrgAnnouncements({ slug }: { slug: string }) {
         </Card>
       )}
 
-      {!messages?.length ? (
+      {!messages?.items.length ? (
         <Card>
           <CardContent className="py-16 text-center">
             <Megaphone size={36} className="mx-auto text-text-muted mb-3" strokeWidth={1.5} />
@@ -42,7 +60,7 @@ export function OrgAnnouncements({ slug }: { slug: string }) {
         </Card>
       ) : (
         <div className="space-y-3">
-          {messages.map((msg) => {
+          {messages.items.map((msg) => {
             const authorName = msg.author
               ? getDisplayName(msg.author.firstName, msg.author.lastName)
               : "Deleted user";
@@ -55,9 +73,7 @@ export function OrgAnnouncements({ slug }: { slug: string }) {
                       {timeAgo(msg.createdAt)}
                     </time>
                   </div>
-                  <p className="text-[14px] text-text-primary whitespace-pre-wrap leading-relaxed">
-                    {msg.content}
-                  </p>
+                  <MarkdownContent content={msg.content} />
                 </CardContent>
               </Card>
             );

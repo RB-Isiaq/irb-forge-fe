@@ -5,6 +5,7 @@ import axios, {
   type InternalAxiosRequestConfig,
 } from "axios";
 import type { ApiResponse } from "@/shared/lib/types";
+import type { NormalizedApiError } from "./error";
 
 interface AuthTokens {
   accessToken: string;
@@ -77,7 +78,7 @@ client.interceptors.response.use(
       if (!refreshToken) {
         tokenStore.clear();
         redirectToLogin();
-        return Promise.reject(error);
+        return Promise.reject(normalizeError(error));
       }
 
       if (isRefreshing) {
@@ -102,13 +103,13 @@ client.interceptors.response.use(
       } catch {
         tokenStore.clear();
         redirectToLogin();
-        return Promise.reject(error);
+        return Promise.reject(normalizeError(error));
       } finally {
         isRefreshing = false;
       }
     }
 
-    return Promise.reject(error);
+    return Promise.reject(normalizeError(error));
   }
 );
 
@@ -116,6 +117,54 @@ function redirectToLogin() {
   if (typeof window !== "undefined" && !window.location.pathname.startsWith("/login")) {
     window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`;
   }
+}
+
+/**
+ * Proactively refreshes the access token using the stored refresh token.
+ * Call this on app init so the access token is valid before any API request,
+ * avoiding the 401 → refresh → retry round trip that happens on every page reload.
+ *
+ * Returns true on success, false if the refresh token is missing or expired.
+ */
+export async function silentRefresh(): Promise<boolean> {
+  const refreshToken = tokenStore.getRefresh();
+  if (!refreshToken) return false;
+  try {
+    const res = await axios.post<ApiResponse<AuthTokens>>(`${BASE_URL}/auth/refresh`, null, {
+      headers: { Authorization: `Bearer ${refreshToken}` },
+    });
+    const { accessToken, refreshToken: newRefresh } = res.data.data;
+    tokenStore.setTokens(accessToken, newRefresh);
+    return true;
+  } catch {
+    tokenStore.clear();
+    return false;
+  }
+}
+
+/**
+ * Transforms a raw Axios error into the normalized shape every onError
+ * handler expects: { code, message, details }.
+ * Non-API errors (network timeouts, CORS failures) get code "NETWORK_ERROR".
+ */
+function normalizeError(err: unknown): NormalizedApiError {
+  const e = err as {
+    response?: { data?: { success?: boolean; error?: Partial<NormalizedApiError> } };
+    message?: string;
+  };
+  const apiError = e?.response?.data?.error;
+  if (e?.response?.data?.success === false && apiError) {
+    return {
+      code: apiError.code ?? "UNKNOWN",
+      message: apiError.message ?? "An error occurred.",
+      details: apiError.details ?? [],
+    };
+  }
+  return {
+    code: "NETWORK_ERROR",
+    message: e?.message ?? "No response from server.",
+    details: [],
+  };
 }
 
 /* Typed helper that unwraps the envelope */

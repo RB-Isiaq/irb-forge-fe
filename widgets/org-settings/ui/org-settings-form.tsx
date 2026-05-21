@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,7 +9,8 @@ import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { FormField } from "@/shared/ui/form-field";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
 import { useOrg, useUpdateOrg, useDeleteOrg } from "@/entities/org";
 import { useMyRole } from "@/entities/member";
 
@@ -20,6 +21,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export function OrgSettingsForm({ slug }: { slug: string }) {
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const { data: org, isLoading } = useOrg(slug);
   const updateOrg = useUpdateOrg(slug);
   const deleteOrg = useDeleteOrg(slug);
@@ -41,7 +43,20 @@ export function OrgSettingsForm({ slug }: { slug: string }) {
     if (updateOrg.isSuccess && org) reset({ name: org.name, description: org.description ?? "" });
   }, [updateOrg.isSuccess, org, reset]);
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading)
+    return (
+      <div className="space-y-6">
+        <div className="rounded-xl border border-border bg-surface p-6 space-y-4">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-3.5 w-64" />
+          <div className="space-y-3 pt-1">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-8 w-24 rounded-lg" />
+          </div>
+        </div>
+      </div>
+    );
   if (!org) return null;
 
   return (
@@ -84,16 +99,22 @@ export function OrgSettingsForm({ slug }: { slug: string }) {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button
-              variant="danger"
-              size="sm"
-              loading={deleteOrg.isPending}
-              onClick={() => {
-                if (confirm(`Delete "${org.name}"? This cannot be undone.`)) deleteOrg.mutate();
-              }}
-            >
+            <Button variant="danger" size="sm" onClick={() => setDeleteOpen(true)}>
               Delete organization
             </Button>
+
+            <ConfirmDialog
+              open={deleteOpen}
+              onOpenChange={setDeleteOpen}
+              title={`Delete "${org.name}"?`}
+              description="This cannot be undone. All members, programs, and data will be permanently removed."
+              confirmLabel="Delete organization"
+              variant="danger"
+              loading={deleteOrg.isPending}
+              onConfirm={() =>
+                deleteOrg.mutate(undefined, { onSettled: () => setDeleteOpen(false) })
+              }
+            />
           </CardContent>
         </Card>
       )}

@@ -16,9 +16,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/sha
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar } from "@/entities/user/ui/avatar";
-import { PageSpinner } from "@/shared/ui/spinner";
+import { Skeleton } from "@/shared/ui/skeleton";
 import { getDisplayName } from "@/shared/lib";
 import { UpdateProgramForm } from "@/features/org/update-program/ui/update-program-form";
+import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
 
 const statusBadge: Record<ProgramStatus, "outline" | "success" | "default" | "warning"> = {
   draft: "outline",
@@ -38,6 +39,8 @@ function formatDate(iso: string | null) {
 
 export function ProgramDetail({ slug, programId }: { slug: string; programId: string }) {
   const [showEditForm, setShowEditForm] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [leaveOpen, setLeaveOpen] = useState(false);
   const { data: program, isLoading } = useProgram(slug, programId);
   const myRole = useMyRole(slug);
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
@@ -51,7 +54,34 @@ export function ProgramDetail({ slug, programId }: { slug: string; programId: st
   const updateStatus = useUpdateEnrollmentStatus(slug, programId);
   const deleteProgram = useDeleteProgram(slug);
 
-  if (isLoading) return <PageSpinner />;
+  if (isLoading)
+    return (
+      <div className="space-y-6">
+        {/* Back link */}
+        <Skeleton className="h-4 w-28" />
+        {/* Program header */}
+        <div className="rounded-xl border border-border bg-surface p-6 space-y-3">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-6 w-52" />
+            <Skeleton className="h-5 w-14 rounded-full" />
+          </div>
+          <Skeleton className="h-3.5 w-full" />
+          <Skeleton className="h-3.5 w-2/3" />
+          <div className="flex gap-4 pt-1">
+            <Skeleton className="h-3.5 w-36" />
+            <Skeleton className="h-3.5 w-24" />
+          </div>
+        </div>
+        {/* Enrollment card */}
+        <div className="rounded-xl border border-border bg-surface px-5 py-4 flex items-center justify-between">
+          <div className="space-y-1.5">
+            <Skeleton className="h-4 w-44" />
+            <Skeleton className="h-3 w-32" />
+          </div>
+          <Skeleton className="h-8 w-20 rounded-lg" />
+        </div>
+      </div>
+    );
   if (!program) return null;
 
   const isEnrolled = myEnrollment?.status === "active";
@@ -112,11 +142,7 @@ export function ProgramDetail({ slug, programId }: { slug: string; programId: st
                     size="sm"
                     variant="danger"
                     leftIcon={<Trash2 size={13} />}
-                    loading={deleteProgram.isPending}
-                    onClick={() => {
-                      if (confirm(`Delete "${program.name}"? This cannot be undone.`))
-                        deleteProgram.mutate(program.id);
-                    }}
+                    onClick={() => setDeleteOpen(true)}
                   >
                     Delete
                   </Button>
@@ -176,14 +202,7 @@ export function ProgramDetail({ slug, programId }: { slug: string; programId: st
               </Button>
             )}
             {isEnrolled && (
-              <Button
-                size="sm"
-                variant="secondary"
-                loading={drop.isPending}
-                onClick={() => {
-                  if (confirm("Leave this program?")) drop.mutate();
-                }}
-              >
+              <Button size="sm" variant="secondary" onClick={() => setLeaveOpen(true)}>
                 Leave program
               </Button>
             )}
@@ -280,6 +299,29 @@ export function ProgramDetail({ slug, programId }: { slug: string; programId: st
           </CardContent>
         </Card>
       )}
+      <ConfirmDialog
+        open={deleteOpen}
+        onOpenChange={setDeleteOpen}
+        title={`Delete "${program.name}"?`}
+        description="This cannot be undone. All enrollments for this program will be permanently removed."
+        confirmLabel="Delete program"
+        variant="danger"
+        loading={deleteProgram.isPending}
+        onConfirm={() =>
+          deleteProgram.mutate(program.id, { onSettled: () => setDeleteOpen(false) })
+        }
+      />
+
+      <ConfirmDialog
+        open={leaveOpen}
+        onOpenChange={setLeaveOpen}
+        title="Leave this program?"
+        description="You can re-enroll later if the program is still active and has available capacity."
+        confirmLabel="Leave program"
+        variant="primary"
+        loading={drop.isPending}
+        onConfirm={() => drop.mutate(undefined, { onSettled: () => setLeaveOpen(false) })}
+      />
     </div>
   );
 }

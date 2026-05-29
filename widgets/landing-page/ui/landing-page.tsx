@@ -678,8 +678,6 @@ function TestimonialsSection() {
   );
 }
 
-/* ── Pricing ─────────────────────────────────────────────────── */
-
 const FREE_PLAN_FEATURES = [
   "1 organization",
   "Up to 20 members",

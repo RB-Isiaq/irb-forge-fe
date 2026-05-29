@@ -848,8 +848,6 @@ function CtaSection() {
   );
 }
 
-/* ── Footer ──────────────────────────────────────────────────── */
-
 const FOOTER_LINKS = [
   {
     title: "Product",

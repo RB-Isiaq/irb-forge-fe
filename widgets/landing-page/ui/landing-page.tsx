@@ -797,8 +797,6 @@ function PricingSection() {
   );
 }
 
-/* ── CTA ─────────────────────────────────────────────────────── */
-
 function CtaSection() {
   return (
     <section className="bg-[#f4f2ec] py-24 border-t border-gray-200/60">

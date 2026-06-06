@@ -36,7 +36,7 @@ async function fetchAndSetUser(
   set({ user });
 }
 
-export const useAuthStore = create<AuthState>()((set) => ({
+export const useAuthStore = create<AuthState>()((set, get) => ({
   user: null,
   isLoading: false,
   isInitialized: false,
@@ -104,14 +104,28 @@ export const useAuthStore = create<AuthState>()((set) => ({
     try {
       const ok = await silentRefresh();
       if (!ok) {
+        // silentRefresh failed — but login() may have succeeded concurrently and
+        // already set the user. In that case, just mark initialized; don't evict.
+        if (!get().user) set({ user: null, isInitialized: true });
+        else set({ isInitialized: true });
+        return;
+      }
+      // If login() already populated the user while the refresh was in-flight,
+      // skip getProfile() — it would overwrite a fresher session with stale data.
+      if (get().user) {
         set({ isInitialized: true });
         return;
       }
       const user = await api.getProfile();
       set({ user, isInitialized: true });
     } catch {
-      tokenStore.clear();
-      set({ user: null, isInitialized: true });
+      // Same guard: don't evict a user that login() just established.
+      if (!get().user) {
+        tokenStore.clear();
+        set({ user: null, isInitialized: true });
+      } else {
+        set({ isInitialized: true });
+      }
     } finally {
       sessionRefreshInFlight = false;
     }

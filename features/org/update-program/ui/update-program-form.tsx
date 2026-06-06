@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useUpdateProgram, type Program } from "@/entities/program";
@@ -9,6 +9,7 @@ import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { FormField } from "@/shared/ui/form-field";
+import { DatePicker } from "@/shared/ui/date-picker";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(200).trim(),
@@ -43,6 +44,7 @@ export function UpdateProgramForm({ slug, program, onSuccess }: UpdateProgramFor
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isDirty },
@@ -125,10 +127,34 @@ export function UpdateProgramForm({ slug, program, onSuccess }: UpdateProgramFor
 
       <div className="grid grid-cols-2 gap-4">
         <FormField label="Start date" htmlFor="uprog-start" error={errors.startDate?.message}>
-          <Input id="uprog-start" type="date" {...register("startDate")} />
+          <Controller
+            name="startDate"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                id="uprog-start"
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Pick start date"
+                error={!!errors.startDate}
+              />
+            )}
+          />
         </FormField>
         <FormField label="End date" htmlFor="uprog-end" error={errors.endDate?.message}>
-          <Input id="uprog-end" type="date" {...register("endDate")} />
+          <Controller
+            name="endDate"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                id="uprog-end"
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Pick end date"
+                error={!!errors.endDate}
+              />
+            )}
+          />
         </FormField>
       </div>
 

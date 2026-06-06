@@ -197,3 +197,35 @@ body {
   border: none;
   border-top: 1px solid var(--color-border);
 }
+.markdown ul.contains-task-list {
+  list-style: none;
+  padding-left: 0.25em;
+}
+.markdown .task-list-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+}
+.markdown .task-list-item input[type="checkbox"] {
+  margin: 0;
+  accent-color: var(--color-primary);
+  cursor: default;
+}
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9em;
+}
+.markdown th,
+.markdown td {
+  border: 1px solid var(--color-border);
+  padding: 0.4em 0.75em;
+  text-align: left;
+}
+.markdown th {
+  background: var(--color-bg);
+  font-weight: 600;
+}
+.markdown del {
+  opacity: 0.6;
+}

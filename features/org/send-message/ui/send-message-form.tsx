@@ -61,7 +61,9 @@ function applyTool(textarea: HTMLTextAreaElement, tool: ToolDef, setValue: (val:
     const block = value.slice(lineStart, lineEnd);
     const prefixed = block
       .split("\n")
-      .map((l) => (l.trim() ? tool.prefix + l : l))
+      // Always prefix the first line (even if empty — cursor is there);
+      // only prefix subsequent lines if non-empty to avoid orphan prefixes.
+      .map((l, idx) => (idx === 0 || l.trim() ? tool.prefix + l : l))
       .join("\n");
     newValue = value.slice(0, lineStart) + prefixed + value.slice(lineEnd);
     nextStart = lineStart + tool.prefix.length;
@@ -95,7 +97,7 @@ function ToolBtn({
       title={label}
       aria-label={label}
       onClick={onClick}
-      className="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-gray-100 transition-colors"
+      className="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-border transition-colors"
     >
       {children}
     </button>
@@ -183,7 +185,7 @@ export function SendMessageForm({ slug, onSuccess }: SendMessageFormProps) {
           {/* Unified toolbar + textarea */}
           <div className="rounded-[8px] border border-border overflow-hidden focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 transition-colors">
             {/* Toolbar */}
-            <div className="flex items-center flex-wrap gap-0.5 px-2 py-1.5 border-b border-border bg-gray-50">
+            <div className="flex items-center flex-wrap gap-0.5 px-2 py-1.5 border-b border-border bg-bg">
               <ToolBtn label="Heading" onClick={() => tool("heading")}>
                 <Heading2 size={15} />
               </ToolBtn>

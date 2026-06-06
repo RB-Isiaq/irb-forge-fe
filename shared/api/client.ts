@@ -137,7 +137,12 @@ export async function silentRefresh(): Promise<boolean> {
     tokenStore.setTokens(accessToken, newRefresh);
     return true;
   } catch {
-    tokenStore.clear();
+    // Only clear if the stored token hasn't been replaced by a concurrent login().
+    // If login() ran while this refresh was in-flight, tokenStore now holds the
+    // new session's token — clearing it would wipe a valid session.
+    if (tokenStore.getRefresh() === refreshToken) {
+      tokenStore.clear();
+    }
     return false;
   }
 }

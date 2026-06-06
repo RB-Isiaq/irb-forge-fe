@@ -9,3 +9,4 @@ export { Spinner, PageSpinner } from "./spinner";
 export { Avatar } from "./avatar";
 export { FormField } from "./form-field";
 export { Textarea } from "./textarea";
+export { DatePicker } from "./date-picker";

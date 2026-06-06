@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useCreateProgram } from "@/entities/program";
@@ -8,6 +8,7 @@ import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Textarea } from "@/shared/ui/textarea";
 import { FormField } from "@/shared/ui/form-field";
+import { DatePicker } from "@/shared/ui/date-picker";
 
 const schema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(200).trim(),
@@ -39,6 +40,7 @@ export function CreateProgramForm({ slug, onSuccess }: CreateProgramFormProps) {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
@@ -112,10 +114,34 @@ export function CreateProgramForm({ slug, onSuccess }: CreateProgramFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <FormField label="Start date" htmlFor="prog-start" error={errors.startDate?.message}>
-          <Input id="prog-start" type="date" {...register("startDate")} />
+          <Controller
+            name="startDate"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                id="prog-start"
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Pick start date"
+                error={!!errors.startDate}
+              />
+            )}
+          />
         </FormField>
         <FormField label="End date" htmlFor="prog-end" error={errors.endDate?.message}>
-          <Input id="prog-end" type="date" {...register("endDate")} />
+          <Controller
+            name="endDate"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                id="prog-end"
+                value={field.value}
+                onChange={field.onChange}
+                placeholder="Pick end date"
+                error={!!errors.endDate}
+              />
+            )}
+          />
         </FormField>
       </div>
 

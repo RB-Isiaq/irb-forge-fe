@@ -11,7 +11,7 @@ import { useMyEnrollmentsInOrg } from "@/entities/enrollment";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
-import { getDisplayName, timeAgo } from "@/shared/lib";
+import { getDisplayName, stripMarkdown, timeAgo } from "@/shared/lib";
 
 /* ── Stat card ───────────────────────────────────────────────── */
 
@@ -215,9 +215,10 @@ export function OrgOverview({ slug }: { slug: string }) {
                   ? getDisplayName(msg.author.firstName, msg.author.lastName)
                   : "Deleted user";
                 return (
-                  <div
+                  <Link
                     key={msg.id}
-                    className={`py-4 ${i < recentMessages.length - 1 ? "border-b border-border" : ""}`}
+                    href={`/orgs/${slug}/messages`}
+                    className={`block py-4 hover:bg-primary/2 transition-colors ${i < recentMessages.length - 1 ? "border-b border-border" : ""}`}
                   >
                     <div className="flex items-center justify-between gap-2 mb-1">
                       <p className="text-[13px] font-semibold text-text-primary">{author}</p>
@@ -226,9 +227,9 @@ export function OrgOverview({ slug }: { slug: string }) {
                       </time>
                     </div>
                     <p className="text-[13px] text-text-secondary line-clamp-2 leading-relaxed">
-                      {msg.content}
+                      {stripMarkdown(msg.content)}
                     </p>
-                  </div>
+                  </Link>
                 );
               })}
               <Link

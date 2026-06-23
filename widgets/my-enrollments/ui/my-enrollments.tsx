@@ -61,7 +61,11 @@ export function MyEnrollments({ slug }: { slug: string }) {
   return (
     <div className="space-y-3">
       {enrollments.map((enrollment) => (
-        <Link key={enrollment.id} href={`/orgs/${slug}/programs/${enrollment.programId}`}>
+        <Link
+          key={enrollment.id}
+          href={`/orgs/${slug}/programs/${enrollment.programId}`}
+          className="block"
+        >
           <div className="flex items-center gap-4 px-5 py-3.5 rounded-xl border border-border bg-surface hover:border-primary/40 transition-colors cursor-pointer">
             <div className="h-9 w-9 rounded-[10px] bg-primary/10 flex items-center justify-center shrink-0">
               <BookOpen size={16} className="text-primary" strokeWidth={1.8} />

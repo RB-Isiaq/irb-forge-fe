@@ -855,6 +855,10 @@ const FOOTER_LINKS = [
       { label: "Features", href: "#features" },
       { label: "Pricing", href: "#pricing" },
       { label: "How it works", href: "#how-it-works" },
+      {
+        label: "Android (beta)",
+        href: "https://github.com/RB-Isiaq/irb-forge-mobile/releases/latest",
+      },
     ],
   },
   {
@@ -893,16 +897,21 @@ function MarketingFooter() {
                 {title}
               </p>
               <ul className="space-y-3">
-                {links.map(({ label, href }) => (
-                  <li key={label}>
-                    <a
-                      href={href}
-                      className="text-[13px] text-gray-600 hover:text-gray-300 transition-colors"
-                    >
-                      {label}
-                    </a>
-                  </li>
-                ))}
+                {links.map(({ label, href }) => {
+                  const isExternal = href.startsWith("http");
+                  return (
+                    <li key={label}>
+                      <a
+                        href={href}
+                        target={isExternal ? "_blank" : undefined}
+                        rel={isExternal ? "noopener noreferrer" : undefined}
+                        className="text-[13px] text-gray-600 hover:text-gray-300 transition-colors"
+                      >
+                        {label}
+                      </a>
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

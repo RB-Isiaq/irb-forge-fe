@@ -36,6 +36,21 @@ export function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+/** Strips common markdown syntax for use in plain-text previews (e.g. recent-activity lists). */
+export function stripMarkdown(markdown: string): string {
+  return markdown
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/(\*\*|__)(.*?)\1/g, "$2")
+    .replace(/(\*|_)(.*?)\1/g, "$2")
+    .replace(/`{1,3}([^`]*)`{1,3}/g, "$1")
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/^>\s+/gm, "")
+    .replace(/^[-*+]\s+/gm, "")
+    .replace(/\n+/g, " ")
+    .trim();
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

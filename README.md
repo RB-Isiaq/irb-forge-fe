@@ -20,6 +20,7 @@
 | Notifications | Sonner                                |
 | Icons         | Lucide React                          |
 | Font          | Inter (brand) · JetBrains Mono (code) |
+| Testing       | Vitest + React Testing Library        |
 
 ---
 
@@ -55,14 +56,17 @@ shared/     ← Non-domain: design system, HTTP client, utilities
 
 | Widget               | Responsibility                                                           |
 | -------------------- | ------------------------------------------------------------------------ |
+| `landing-page/`      | Public marketing page (`/`) — unauthenticated                            |
 | `sidebar/`           | App navigation, pending invitations badge, logout                        |
 | `dashboard-stats/`   | Org count + pending invitations count (live data)                        |
 | `org-grid/`          | Organization card list                                                   |
-| `org-members/`       | Members table with role badges                                           |
+| `org-overview/`      | Org home tab — stats, my programs, recent announcements, quick actions   |
+| `org-members/`       | Members table with role badges, role change + remove (owner/admin)       |
 | `org-invitations/`   | Invitations table — send, cancel, resend (owner/admin)                   |
 | `org-programs/`      | Programs list — create form (managers), enroll status (members)          |
 | `program-detail/`    | Program header, enroll/drop (members), roster + mark-complete (managers) |
 | `org-announcements/` | Announcements feed + compose form (owner/admin/mentor)                   |
+| `billing-overview/`  | Plan + payment history, Stripe checkout, cancel subscription (owner)     |
 | `my-enrollments/`    | Member's enrolled programs with status                                   |
 | `org-settings/`      | Settings form + danger zone (owner-only delete)                          |
 | `invitations-inbox/` | Personal invitation inbox (ID-based accept/decline)                      |
@@ -91,23 +95,24 @@ shared/     ← Non-domain: design system, HTTP client, utilities
 
 Each entity slice owns its **types**, **API calls**, and **React Query hooks**. `useQuery` / `useMutation` live in `model/queries.ts` only.
 
-| Entity        | Key exports                                                                                                                 |
-| ------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `user/`       | `useAuth`, `userApi`, `User` type, `Avatar` component                                                                       |
-| `org/`        | `useOrg`, `useOrgs`, `useCreateOrg`, `useUpdateOrg`, `useDeleteOrg`                                                         |
-| `member/`     | `useMembers`, `useMyMembership`, `useMyRole`, `useRemoveMember`                                                             |
-| `invitation/` | `useOrgInvitations`, `useMyInvitations`, `useAcceptInvitation`, `useSendInvitation`, `useResendInvitation`                  |
-| `program/`    | `usePrograms`, `useProgram`, `useCreateProgram`, `useUpdateProgram`, `useDeleteProgram`                                     |
-| `enrollment/` | `useEnrollments`, `useMyEnrollment`, `useMyEnrollmentsInOrg`, `useEnroll`, `useDropEnrollment`, `useUpdateEnrollmentStatus` |
-| `message/`    | `useMessages`, `useSendMessage`                                                                                             |
+| Entity          | Key exports                                                                                                                 |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `user/`         | `useAuth`, `userApi`, `User` type, `Avatar` component                                                                       |
+| `org/`          | `useOrg`, `useOrgs`, `useCreateOrg`, `useUpdateOrg`, `useDeleteOrg`                                                         |
+| `member/`       | `useMembers`, `useMyMembership`, `useMyRole`, `useUpdateMemberRole`, `useRemoveMember`                                      |
+| `invitation/`   | `useOrgInvitations`, `useMyInvitations`, `useAcceptInvitation`, `useSendInvitation`, `useResendInvitation`                  |
+| `program/`      | `usePrograms`, `useProgram`, `useCreateProgram`, `useUpdateProgram`, `useDeleteProgram`                                     |
+| `enrollment/`   | `useEnrollments`, `useMyEnrollment`, `useMyEnrollmentsInOrg`, `useEnroll`, `useDropEnrollment`, `useUpdateEnrollmentStatus` |
+| `message/`      | `useMessages`, `useSendMessage`                                                                                             |
+| `subscription/` | `useOrgSubscription`, `useOrgPayments`, `useCreateCheckout`, `useCancelSubscription`                                        |
 
 ### `shared/` — Non-domain utilities
 
-| Segment       | Contents                                                                                    |
-| ------------- | ------------------------------------------------------------------------------------------- |
-| `shared/ui/`  | Button, Input, Textarea, Card, Badge, Spinner, FormField, Label, AuthDivider                |
-| `shared/api/` | Axios client, silent 401 refresh interceptor, `extractApiError()`                           |
-| `shared/lib/` | `cn()`, `slugify()`, `getInitials()`, `getDisplayName()`, `setSessionCookie()`, `queryKeys` |
+| Segment       | Contents                                                                                                       |
+| ------------- | -------------------------------------------------------------------------------------------------------------- |
+| `shared/ui/`  | Button, Input, Textarea, Card, Badge, Spinner, FormField, Label, AuthDivider                                   |
+| `shared/api/` | Axios client, silent 401 refresh interceptor, `extractApiError()`                                              |
+| `shared/lib/` | `cn()`, `slugify()`, `stripMarkdown()`, `getInitials()`, `getDisplayName()`, `setSessionCookie()`, `queryKeys` |
 
 ---
 
@@ -143,6 +148,12 @@ const canManage = myRole === "owner" || myRole === "admin";
 
 ## Routes
 
+### Public
+
+| Route | Description  |
+| ----- | ------------ |
+| `/`   | Landing page |
+
 ### Auth (public)
 
 | Route                  | Description                      |
@@ -158,20 +169,21 @@ const canManage = myRole === "owner" || myRole === "admin";
 
 ### App (authenticated)
 
-| Route                        | Description                 |
-| ---------------------------- | --------------------------- |
-| `/dashboard`                 | Stats + org grid            |
-| `/orgs`                      | All organizations           |
-| `/orgs/new`                  | Create organization         |
-| `/orgs/[slug]`               | Org overview (5-tab nav)    |
-| `/orgs/[slug]/members`       | Members list                |
-| `/orgs/[slug]/programs`      | Programs list + create      |
-| `/orgs/[slug]/programs/[id]` | Program detail + enrollment |
-| `/orgs/[slug]/messages`      | Announcements feed          |
-| `/orgs/[slug]/invitations`   | Invitations management      |
-| `/orgs/[slug]/settings`      | Org settings                |
-| `/invitations`               | Personal invitation inbox   |
-| `/settings`                  | User profile + password     |
+| Route                        | Description                      |
+| ---------------------------- | -------------------------------- |
+| `/dashboard`                 | Stats + org grid                 |
+| `/orgs`                      | All organizations                |
+| `/orgs/new`                  | Create organization              |
+| `/orgs/[slug]`               | Org overview (5-tab nav)         |
+| `/orgs/[slug]/members`       | Members list                     |
+| `/orgs/[slug]/programs`      | Programs list + create           |
+| `/orgs/[slug]/programs/[id]` | Program detail + enrollment      |
+| `/orgs/[slug]/messages`      | Announcements feed               |
+| `/orgs/[slug]/invitations`   | Invitations management           |
+| `/orgs/[slug]/billing`       | Plan + payments, Stripe checkout |
+| `/orgs/[slug]/settings`      | Org settings                     |
+| `/invitations`               | Personal invitation inbox        |
+| `/settings`                  | User profile + password          |
 
 ---
 
@@ -179,25 +191,15 @@ const canManage = myRole === "owner" || myRole === "admin";
 
 ### ✅ Complete
 
-- **Weekend 1 (Auth)** — All auth flows, Google Sign-In, email verification, profile settings
-- **Weekend 2 (Orgs + Members + Invitations)** — Full org lifecycle, invitations with email CTA pages, role-gated UI
-- **Weekend 3 (Programs + Enrollments + Messages)** — Full CRUD with role-gated actions, enrollment flow, announcements
+- **Auth** — All auth flows, Google Sign-In, email verification, profile settings
+- **Orgs + Members + Invitations** — Full org lifecycle, invitations with email CTA pages, role-gated UI, member role change + removal
+- **Programs + Enrollments + Messages** — Full CRUD with role-gated actions, enrollment flow, announcements
+- **Billing** — Stripe checkout, plan + payment history, cancel subscription (owner-only), wired end-to-end against the real backend
+- **Companion mobile app** ([`irb-forge-mobile`](https://github.com/RB-Isiaq/irb-forge-mobile)) — same backend, native UI, Android APK available via GitHub releases
 
-### 🔲 Gaps (no backend blocker)
+### 🔲 Known gaps
 
-- **Members list actions** — role badge display works; change-role and remove-member UI not built yet (`useUpdateMemberRole` / `useRemoveMember` hooks exist, just no UI surface)
-- **"My Programs" on dashboard** — `MyEnrollments` widget exists but isn't surfaced on the dashboard or as a dedicated member page
-
-### 🔲 Blocked on backend (Weekend 4 — May 24–25)
-
-- **Subscriptions + Payments** — Stripe checkout, billing page, plan management
-- **Pagination** — all list endpoints currently return everything; pagination UI pending backend offset support
-
-### 🔲 Weekend 5 (May 31)
-
-- Production deploy (Railway / Render)
-- Switch email provider from Mailtrap to production SMTP
-- Final smoke test
+- **Pagination** — most list endpoints (programs, members, messages) still return everything; only `/payments` supports `page`/`limit` so far
 
 ---
 
@@ -235,6 +237,8 @@ npm run build        # production build
 npm run lint         # ESLint
 npm run type-check   # tsc --noEmit
 npm run format       # prettier --write
+npm test             # vitest, watch mode
+npm run test:run     # vitest, single run (CI)
 ```
 
 ---
@@ -246,3 +250,11 @@ npm run format       # prettier --write
 - **`queryKeys` is the single source of truth** — no string literals as cache keys anywhere.
 - **`extractApiError(err, fallback)`** — the only way to unwrap API error messages.
 - **Canonical Tailwind classes** — `rounded-xl` not `rounded-[12px]`, `max-w-100` not `max-w-[400px]`.
+- **New widgets/features/entities ship with a colocated `*.test.tsx`** — Vitest + React Testing Library, mock entity hooks rather than wrapping in a real `QueryClientProvider`. CI (`.github/workflows/ci.yml`) fails the PR if tests don't pass.
+
+---
+
+## Related projects
+
+- **Backend** (`irb-forge`, sibling repo) — NestJS API this app talks to.
+- **Mobile** ([`irb-forge-mobile`](https://github.com/RB-Isiaq/irb-forge-mobile)) — Expo/React Native companion app, same backend and domain model. Android APK available via GitHub releases; iOS not yet distributed.

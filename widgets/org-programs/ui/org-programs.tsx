@@ -38,7 +38,7 @@ function ProgramCard({
   myEnrollmentStatus?: string | null;
 }) {
   return (
-    <Link href={`/orgs/${slug}/programs/${program.id}`}>
+    <Link href={`/orgs/${slug}/programs/${program.id}`} className="block">
       <div className="flex items-start gap-4 px-5 py-4 rounded-xl border border-border bg-surface hover:border-primary/40 hover:bg-primary/[0.02] transition-colors cursor-pointer">
         <div className="h-10 w-10 rounded-[10px] bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
           <BookOpen size={18} className="text-primary" strokeWidth={1.8} />

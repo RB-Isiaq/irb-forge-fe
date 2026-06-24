@@ -35,6 +35,14 @@ shared/     Non-domain. ui/ (design system), api/ (HTTP client), lib/ (utils, qu
 - Every slice must have an `index.ts` public API. Import from the slice root, never from internal paths.
 - Zod schemas belong inside the feature or entity that owns the validation, not in shared.
 
+### Testing
+
+- Test runner is Vitest + React Testing Library (`vitest.config.ts`, `vitest.setup.ts`). Run via `npm test` (watch) or `npm run test:run` (CI).
+- New widgets/features/entities get a colocated `*.test.tsx` (or `.test.ts` for plain utils) next to the file under test — not a separate `__tests__/` tree.
+- Import `describe`/`it`/`expect`/`vi` explicitly from `"vitest"` per file. Do not add `"types": ["vitest/globals"]` to `tsconfig.json` — that overrides TS's automatic `@types/*` inclusion (`@types/node`, `@types/react`) and silently breaks ambient types project-wide.
+- Mock entity hooks (`vi.mock("@/entities/<name>", ...)`) rather than wrapping tests in a real `QueryClientProvider`, unless the test specifically needs React Query's cache/mutation behavior.
+- `npm run test:run` is a required CI check (`.github/workflows/ci.yml`, `quality` job) — a PR with failing tests can't merge.
+
 ### Next.js 16 specifics
 
 - **`proxy.ts`** (not `middleware.ts`) — Next.js 16 renamed middleware. Export `proxy()` not `middleware()`.
@@ -73,4 +81,6 @@ npm run dev       # dev server
 npm run build     # production build
 npx tsc --noEmit  # type check only
 npm run lint      # ESLint
+npm test          # vitest, watch mode
+npm run test:run  # vitest, single run (CI)
 ```

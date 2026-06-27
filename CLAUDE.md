@@ -34,6 +34,7 @@ shared/     Non-domain. ui/ (design system), api/ (HTTP client), lib/ (utils, qu
 - `extractApiError` (`@/shared/api`) is the ONLY place to unwrap API error envelopes.
 - Every slice must have an `index.ts` public API. Import from the slice root, never from internal paths.
 - Zod schemas belong inside the feature or entity that owns the validation, not in shared.
+- Widgets with a primary data-fetching query must handle `isError` — render `shared/ui/error-state`'s `ErrorState` with `onRetry={refetch}`. Don't let a failed fetch silently degrade to an empty/zero state.
 
 ### Testing
 

@@ -29,3 +29,27 @@ export interface CreateChannelPayload {
 export interface SendChannelMessagePayload {
   content: string;
 }
+
+/** Cursor-paginated — `nextCursor` is the oldest item's `createdAt`, or `null` when exhausted. */
+export interface CursorPaginatedMessages {
+  items: ChannelMessage[];
+  nextCursor: string | null;
+}
+
+export interface ChannelMember {
+  id: string;
+  channelId: string;
+  organizationId: string;
+  userId: string;
+  joinedAt: string;
+  user: {
+    id: string;
+    email: string;
+    firstName: string | null;
+    lastName: string | null;
+  } | null;
+}
+
+export interface AddChannelMemberPayload {
+  userId: string;
+}

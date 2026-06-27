@@ -1,7 +1,10 @@
 export type {
+  AddChannelMemberPayload,
   Channel,
+  ChannelMember,
   ChannelMessage,
   CreateChannelPayload,
+  CursorPaginatedMessages,
   SendChannelMessagePayload,
 } from "./types";
 export {
@@ -10,4 +13,7 @@ export {
   useDeleteChannel,
   useChannelMessages,
   useSendChannelMessage,
+  useChannelMembers,
+  useAddChannelMember,
+  useRemoveChannelMember,
 } from "./queries";

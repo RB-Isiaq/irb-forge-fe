@@ -14,7 +14,7 @@ import { Textarea } from "@/shared/ui/textarea";
 import { FormField } from "@/shared/ui/form-field";
 
 const schema = z.object({
-  name: z.string().min(2, "At least 2 characters").max(80).trim(),
+  name: z.string().trim().min(2, "At least 2 characters").max(80),
   slug: z
     .string()
     .min(2)

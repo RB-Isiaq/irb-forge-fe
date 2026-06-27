@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ErrorState } from "@/shared/ui/error-state";
 import { CreateProgramForm } from "@/features/org/create-program/ui/create-program-form";
 
 const statusBadge: Record<ProgramStatus, "outline" | "success" | "default" | "warning"> = {
@@ -79,7 +80,7 @@ function ProgramCard({
 
 export function OrgPrograms({ slug }: { slug: string }) {
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const { data: programs, isLoading } = usePrograms(slug);
+  const { data: programs, isLoading, isError, refetch } = usePrograms(slug);
   const { data: myEnrollments } = useMyEnrollmentsInOrg(slug);
   const myRole = useMyRole(slug);
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
@@ -117,6 +118,14 @@ export function OrgPrograms({ slug }: { slug: string }) {
           </div>
         ))}
       </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card>
+        <ErrorState message="Couldn't load programs." onRetry={refetch} />
+      </Card>
     );
   }
 

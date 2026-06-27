@@ -41,18 +41,26 @@ function StatCard({ label, value, icon: Icon, href, badge }: StatCardProps) {
 }
 
 export function DashboardStats() {
-  const { data: orgs, isLoading: orgsLoading } = useOrgs();
-  const { data: invitations, isLoading: invitationsLoading } = useMyInvitations();
+  const { data: orgs, isLoading: orgsLoading, isError: orgsError } = useOrgs();
+  const {
+    data: invitations,
+    isLoading: invitationsLoading,
+    isError: invitationsError,
+  } = useMyInvitations();
 
-  const orgCount = orgsLoading ? "—" : (orgs?.length ?? 0);
-  const pendingInvitations = invitations?.filter((i) => i.status === "pending").length ?? 0;
+  // A failed fetch must not collapse to the same "0" a genuinely empty list would show.
+  const orgCount = orgsLoading || orgsError ? "—" : (orgs?.length ?? 0);
+  const pendingInvitations =
+    invitationsLoading || invitationsError
+      ? 0
+      : (invitations?.filter((i) => i.status === "pending").length ?? 0);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <StatCard label="Organizations" value={orgCount} icon={Building2} href="/orgs" />
       <StatCard
         label="Pending invitations"
-        value={invitationsLoading ? "—" : pendingInvitations}
+        value={invitationsLoading || invitationsError ? "—" : pendingInvitations}
         icon={Bell}
         href="/invitations"
         badge={pendingInvitations}

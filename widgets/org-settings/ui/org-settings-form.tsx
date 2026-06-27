@@ -11,18 +11,19 @@ import { Textarea } from "@/shared/ui/textarea";
 import { FormField } from "@/shared/ui/form-field";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
+import { ErrorState } from "@/shared/ui/error-state";
 import { useOrg, useUpdateOrg, useDeleteOrg } from "@/entities/org";
 import { useMyRole } from "@/entities/member";
 
 const schema = z.object({
-  name: z.string().min(2).max(80).trim(),
+  name: z.string().trim().min(2).max(80),
   description: z.string().max(500).optional(),
 });
 type FormData = z.infer<typeof schema>;
 
 export function OrgSettingsForm({ slug }: { slug: string }) {
   const [deleteOpen, setDeleteOpen] = useState(false);
-  const { data: org, isLoading } = useOrg(slug);
+  const { data: org, isLoading, isError, refetch } = useOrg(slug);
   const updateOrg = useUpdateOrg(slug);
   const deleteOrg = useDeleteOrg(slug);
   const myRole = useMyRole(slug);
@@ -57,6 +58,14 @@ export function OrgSettingsForm({ slug }: { slug: string }) {
         </div>
       </div>
     );
+
+  if (isError)
+    return (
+      <Card>
+        <ErrorState message="Couldn't load organization settings." onRetry={refetch} />
+      </Card>
+    );
+
   if (!org) return null;
 
   return (

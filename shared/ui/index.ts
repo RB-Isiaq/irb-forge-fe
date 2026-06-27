@@ -10,3 +10,4 @@ export { Avatar } from "./avatar";
 export { FormField } from "./form-field";
 export { Textarea } from "./textarea";
 export { DatePicker } from "./date-picker";
+export { ErrorState } from "./error-state";

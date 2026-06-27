@@ -14,6 +14,7 @@ import {
   Users,
   BookOpen,
   Megaphone,
+  Hash,
   Mail,
   CreditCard,
   Settings,
@@ -131,6 +132,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
         { label: "Members", href: `/orgs/${orgSlug}/members`, icon: Users },
         { label: "Programs", href: `/orgs/${orgSlug}/programs`, icon: BookOpen },
         { label: "Announcements", href: `/orgs/${orgSlug}/messages`, icon: Megaphone },
+        { label: "Channels", href: `/orgs/${orgSlug}/channels`, icon: Hash },
         ...(canManageOrg
           ? ([
               { label: "Invitations", href: `/orgs/${orgSlug}/invitations`, icon: Mail },

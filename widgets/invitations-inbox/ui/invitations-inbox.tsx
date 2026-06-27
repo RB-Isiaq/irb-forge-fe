@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/shared/ui/card";
 import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ErrorState } from "@/shared/ui/error-state";
 import {
   useMyInvitations,
   useAcceptInvitationById,
@@ -15,7 +16,7 @@ import { getDisplayName } from "@/shared/lib";
 
 export function InvitationsInbox() {
   const router = useRouter();
-  const { data: invitations, isLoading } = useMyInvitations();
+  const { data: invitations, isLoading, isError, refetch } = useMyInvitations();
 
   /*
    * ID-based hooks — require backend endpoints:
@@ -45,6 +46,13 @@ export function InvitationsInbox() {
           </div>
         ))}
       </div>
+    );
+
+  if (isError)
+    return (
+      <Card>
+        <ErrorState message="Couldn't load your invitations." onRetry={refetch} />
+      </Card>
     );
 
   if (!invitations?.length) {

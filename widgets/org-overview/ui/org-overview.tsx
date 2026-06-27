@@ -11,6 +11,7 @@ import { useMyEnrollmentsInOrg } from "@/entities/enrollment";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ErrorState } from "@/shared/ui/error-state";
 import { getDisplayName, stripMarkdown, timeAgo } from "@/shared/lib";
 
 /* ── Stat card ───────────────────────────────────────────────── */
@@ -47,7 +48,7 @@ function StatCard({
 /* ── Main widget ─────────────────────────────────────────────── */
 
 export function OrgOverview({ slug }: { slug: string }) {
-  const { data: org, isLoading } = useOrg(slug);
+  const { data: org, isLoading, isError, refetch } = useOrg(slug);
   const { data: members } = useMembers(slug);
   const { data: programs } = usePrograms(slug);
   const { data: messages } = useMessages(slug);
@@ -103,6 +104,14 @@ export function OrgOverview({ slug }: { slug: string }) {
         </div>
       </div>
     );
+
+  if (isError)
+    return (
+      <Card>
+        <ErrorState message="Couldn't load this organization." onRetry={refetch} />
+      </Card>
+    );
+
   if (!org) return null;
 
   return (

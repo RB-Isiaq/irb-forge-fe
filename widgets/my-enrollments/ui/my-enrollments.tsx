@@ -6,6 +6,7 @@ import { useMyEnrollmentsInOrg, type EnrollmentStatus } from "@/entities/enrollm
 import { Card, CardContent } from "@/shared/ui/card";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ErrorState } from "@/shared/ui/error-state";
 
 const statusBadge: Record<EnrollmentStatus, "primary" | "success" | "outline"> = {
   active: "primary",
@@ -23,7 +24,7 @@ function formatDate(iso: string | null) {
 }
 
 export function MyEnrollments({ slug }: { slug: string }) {
-  const { data: enrollments, isLoading } = useMyEnrollmentsInOrg(slug);
+  const { data: enrollments, isLoading, isError, refetch } = useMyEnrollmentsInOrg(slug);
 
   if (isLoading)
     return (
@@ -42,6 +43,13 @@ export function MyEnrollments({ slug }: { slug: string }) {
           </div>
         ))}
       </div>
+    );
+
+  if (isError)
+    return (
+      <Card>
+        <ErrorState message="Couldn't load your programs." onRetry={refetch} />
+      </Card>
     );
 
   if (!enrollments?.length) {

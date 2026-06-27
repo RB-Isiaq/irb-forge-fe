@@ -6,13 +6,14 @@ import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ErrorState } from "@/shared/ui/error-state";
 import { useOrgInvitations, useCancelInvitation, useResendInvitation } from "@/entities/invitation";
 import { useMyRole } from "@/entities/member";
 import { InviteMemberForm } from "@/features/org/invite-member/ui/invite-member-form";
 
 export function InvitationsTable({ slug }: { slug: string }) {
   const [showForm, setShowForm] = useState(false);
-  const { data: invitations, isLoading } = useOrgInvitations(slug);
+  const { data: invitations, isLoading, isError, refetch } = useOrgInvitations(slug);
   const cancel = useCancelInvitation(slug);
   const resend = useResendInvitation(slug);
   const myRole = useMyRole(slug);
@@ -36,6 +37,13 @@ export function InvitationsTable({ slug }: { slug: string }) {
           </div>
         ))}
       </div>
+    );
+
+  if (isError)
+    return (
+      <Card>
+        <ErrorState message="Couldn't load invitations." onRetry={refetch} />
+      </Card>
     );
 
   return (

@@ -5,12 +5,13 @@ import { useMessages } from "@/entities/message";
 import { useMyRole } from "@/entities/member";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ErrorState } from "@/shared/ui/error-state";
 import { getDisplayName, timeAgo } from "@/shared/lib";
 import { MarkdownContent } from "@/shared/ui/markdown-content";
 import { SendMessageForm } from "@/features/org/send-message/ui/send-message-form";
 
 export function OrgAnnouncements({ slug }: { slug: string }) {
-  const { data: messages, isLoading } = useMessages(slug);
+  const { data: messages, isLoading, isError, refetch } = useMessages(slug);
   const myRole = useMyRole(slug);
   const canPost = myRole === "owner" || myRole === "admin" || myRole === "mentor";
 
@@ -31,6 +32,13 @@ export function OrgAnnouncements({ slug }: { slug: string }) {
           </Card>
         ))}
       </div>
+    );
+
+  if (isError)
+    return (
+      <Card>
+        <ErrorState message="Couldn't load announcements." onRetry={refetch} />
+      </Card>
     );
 
   return (

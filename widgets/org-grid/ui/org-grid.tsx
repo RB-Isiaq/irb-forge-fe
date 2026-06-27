@@ -5,10 +5,11 @@ import { Building2 } from "lucide-react";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ErrorState } from "@/shared/ui/error-state";
 import { useOrgs } from "@/entities/org";
 
 export function OrgGrid() {
-  const { data: orgs, isLoading } = useOrgs();
+  const { data: orgs, isLoading, isError, refetch } = useOrgs();
 
   if (isLoading) {
     return (
@@ -27,6 +28,14 @@ export function OrgGrid() {
           </div>
         ))}
       </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Card>
+        <ErrorState message="Couldn't load your organizations." onRetry={refetch} />
+      </Card>
     );
   }
 

@@ -10,8 +10,8 @@ import { Input } from "@/shared/ui/input";
 import { FormField } from "@/shared/ui/form-field";
 
 const schema = z.object({
-  firstName: z.string().min(1, "First name is required").max(50).trim(),
-  lastName: z.string().min(1, "Last name is required").max(50).trim(),
+  firstName: z.string().trim().min(1, "First name is required").max(50),
+  lastName: z.string().trim().min(1, "Last name is required").max(50),
 });
 type FormData = z.infer<typeof schema>;
 

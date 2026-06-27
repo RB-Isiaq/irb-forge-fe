@@ -17,6 +17,7 @@ import { Button } from "@/shared/ui/button";
 import { Badge } from "@/shared/ui/badge";
 import { Avatar } from "@/entities/user/ui/avatar";
 import { Skeleton } from "@/shared/ui/skeleton";
+import { ErrorState } from "@/shared/ui/error-state";
 import { getDisplayName } from "@/shared/lib";
 import { UpdateProgramForm } from "@/features/org/update-program/ui/update-program-form";
 import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
@@ -41,7 +42,7 @@ export function ProgramDetail({ slug, programId }: { slug: string; programId: st
   const [showEditForm, setShowEditForm] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [leaveOpen, setLeaveOpen] = useState(false);
-  const { data: program, isLoading } = useProgram(slug, programId);
+  const { data: program, isLoading, isError, refetch } = useProgram(slug, programId);
   const myRole = useMyRole(slug);
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
   const isOwnerOrAdmin = myRole === "owner" || myRole === "admin";
@@ -82,6 +83,14 @@ export function ProgramDetail({ slug, programId }: { slug: string; programId: st
         </div>
       </div>
     );
+
+  if (isError)
+    return (
+      <Card>
+        <ErrorState message="Couldn't load this program." onRetry={refetch} />
+      </Card>
+    );
+
   if (!program) return null;
 
   const isEnrolled = myEnrollment?.status === "active";

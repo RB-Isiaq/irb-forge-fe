@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
+import { ErrorState } from "@/shared/ui/error-state";
 import { Avatar } from "@/entities/user/ui/avatar";
 import {
   useMembers,
@@ -30,7 +31,7 @@ const ROLE_OPTIONS: Array<{ value: Exclude<OrgRole, "owner">; label: string }> =
 
 export function MembersList({ slug }: { slug: string }) {
   const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
-  const { data: members, isLoading } = useMembers(slug);
+  const { data: members, isLoading, isError, refetch } = useMembers(slug);
   const { data: myMembership } = useMyMembership(slug);
   const updateRole = useUpdateMemberRole(slug);
   const remove = useRemoveMember(slug);
@@ -55,6 +56,14 @@ export function MembersList({ slug }: { slug: string }) {
             <Skeleton className="h-5 w-14 rounded-full" />
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="rounded-xl border border-border bg-surface">
+        <ErrorState message="Couldn't load members." onRetry={refetch} />
       </div>
     );
   }

@@ -12,7 +12,7 @@ import { FormField } from "@/shared/ui/form-field";
 import { DatePicker } from "@/shared/ui/date-picker";
 
 const schema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(200).trim(),
+  name: z.string().trim().min(2, "Name must be at least 2 characters").max(200),
   description: z.string().max(1000).optional(),
   status: z.enum(["draft", "active", "completed", "cancelled"]),
   capacity: z

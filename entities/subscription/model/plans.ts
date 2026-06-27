@@ -9,12 +9,14 @@ export const FREE_FEATURES = [
   "Up to 20 members",
   "Up to 3 programs",
   "Announcements & email invitations",
+  "1 group channel",
   "Basic member management",
 ];
 
 export const PRO_FEATURES = [
   "Unlimited members",
   "Unlimited programs",
+  "Unlimited group channels",
   "Everything in Free",
   "Priority support",
   "Analytics (coming soon)",

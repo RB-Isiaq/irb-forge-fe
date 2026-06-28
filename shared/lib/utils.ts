@@ -36,6 +36,17 @@ export function timeAgo(iso: string): string {
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+/** "Today" / "Yesterday" / a full date — for chat-style date-divider rows. */
+export function formatDateDivider(iso: string): string {
+  const date = new Date(iso);
+  const now = new Date();
+  const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const diffDays = Math.round((startOfDay(now) - startOfDay(date)) / 86_400_000);
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  return date.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+}
+
 /** Strips common markdown syntax for use in plain-text previews (e.g. recent-activity lists). */
 export function stripMarkdown(markdown: string): string {
   return markdown

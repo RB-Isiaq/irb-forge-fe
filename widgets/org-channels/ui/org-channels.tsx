@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Hash, Plus, Trash2, Lock, Users } from "lucide-react";
+import { ArrowLeft, Hash, Plus, Trash2, Lock, Users } from "lucide-react";
 import {
   useChannels,
   useChannelMessages,
@@ -10,7 +10,7 @@ import {
 } from "@/entities/channel";
 import { useMyRole } from "@/entities/member";
 import { useOrgSubscription } from "@/entities/subscription";
-import { useAuth } from "@/entities/user";
+import { Avatar, useAuth } from "@/entities/user";
 import { CreateChannelForm } from "@/features/org/create-channel/ui/create-channel-form";
 import { SendChannelMessageForm } from "@/features/org/send-channel-message/ui/send-channel-message-form";
 import { ManageChannelMembersPanel } from "@/features/org/manage-channel-members/ui/manage-channel-members-panel";
@@ -20,9 +20,10 @@ import { Spinner } from "@/shared/ui/spinner";
 import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
 import { ErrorState } from "@/shared/ui/error-state";
 import { MarkdownContent } from "@/shared/ui/markdown-content";
-import { cn, getDisplayName, timeAgo } from "@/shared/lib";
+import { cn, formatDateDivider, getDisplayName, timeAgo } from "@/shared/lib";
 
 const NEAR_TOP_PX = 80;
+const GROUP_GAP_MS = 5 * 60_000;
 
 export function OrgChannels({ slug }: { slug: string }) {
   const { data: channels, isLoading, isError, refetch } = useChannels(slug);
@@ -39,6 +40,14 @@ export function OrgChannels({ slug }: { slug: string }) {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [channelToDelete, setChannelToDelete] = useState<Channel | null>(null);
   const [showMembersPanel, setShowMembersPanel] = useState(false);
+  // Below the `sm` breakpoint, the list and feed are shown one at a time —
+  // irrelevant at `sm` and up, where both panes are always visible.
+  const [mobileView, setMobileView] = useState<"list" | "feed">("list");
+
+  function selectChannel(channelId: string) {
+    setSelectedChannelId(channelId);
+    setMobileView("feed");
+  }
 
   // Default to the first channel until the user explicitly picks one.
   const activeChannelId = selectedChannelId ?? channels?.[0]?.id ?? null;
@@ -62,6 +71,33 @@ export function OrgChannels({ slug }: { slug: string }) {
   const messages = useMemo(
     () => [...(messagePages?.pages.flatMap((p) => p.items) ?? [])].reverse(),
     [messagePages]
+  );
+
+  // Date dividers + consecutive-message grouping (same author, within a few
+  // minutes, same day → collapse the repeated avatar/name, Slack/Discord-style).
+  type RenderItem = {
+    msg: (typeof messages)[number];
+    showDateDivider: boolean;
+    showHeader: boolean;
+    time: number;
+    dateKey: string;
+  };
+  const renderItems = useMemo(
+    () =>
+      messages.reduce<RenderItem[]>((acc, msg) => {
+        const prev = acc[acc.length - 1];
+        const time = new Date(msg.createdAt).getTime();
+        const dateKey = new Date(msg.createdAt).toDateString();
+        const isNewDay = !prev || dateKey !== prev.dateKey;
+        const showHeader =
+          isNewDay ||
+          !prev ||
+          msg.authorId !== prev.msg.authorId ||
+          time - prev.time > GROUP_GAP_MS;
+        acc.push({ msg, showDateDivider: isNewDay, showHeader, time, dateKey });
+        return acc;
+      }, []),
+    [messages]
   );
 
   const feedRef = useRef<HTMLDivElement>(null);
@@ -101,9 +137,9 @@ export function OrgChannels({ slug }: { slug: string }) {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-[200px_1fr] gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
         <Skeleton className="h-64" />
-        <Skeleton className="h-64" />
+        <Skeleton className="h-64 hidden sm:block" />
       </div>
     );
   }
@@ -117,14 +153,14 @@ export function OrgChannels({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="grid grid-cols-[200px_1fr] gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-[200px_1fr] gap-4">
       {/* Channel list */}
-      <Card className="p-2 h-fit">
+      <Card className={cn("p-2 h-fit", mobileView === "feed" && "hidden sm:block")}>
         <div className="space-y-0.5">
           {channels?.map((channel) => (
             <button
               key={channel.id}
-              onClick={() => setSelectedChannelId(channel.id)}
+              onClick={() => selectChannel(channel.id)}
               className={cn(
                 "group w-full flex items-center gap-1.5 rounded-[7px] px-2.5 py-2 text-[13px] font-medium text-left transition-colors",
                 activeChannelId === channel.id
@@ -174,15 +210,35 @@ export function OrgChannels({ slug }: { slug: string }) {
       </Card>
 
       {/* Active channel feed */}
-      <Card className="flex flex-col h-150">
+      <Card className={cn("h-150 flex-col", mobileView === "feed" ? "flex" : "hidden sm:flex")}>
         {!activeChannel ? (
-          <CardContent className="flex-1 flex items-center justify-center text-[13px] text-text-muted">
-            No channel selected.
-          </CardContent>
+          <>
+            <div className="px-4 py-3 border-b border-border sm:hidden">
+              <button
+                type="button"
+                onClick={() => setMobileView("list")}
+                className="flex items-center gap-1 text-[12px] font-medium text-text-muted hover:text-text-primary transition-colors"
+              >
+                <ArrowLeft size={14} />
+                Channels
+              </button>
+            </div>
+            <CardContent className="flex-1 flex items-center justify-center text-[13px] text-text-muted">
+              No channel selected.
+            </CardContent>
+          </>
         ) : (
           <>
             <div className="px-4 py-3 border-b border-border flex items-center justify-between gap-1.5">
               <div className="flex items-center gap-1.5 min-w-0">
+                <button
+                  type="button"
+                  onClick={() => setMobileView("list")}
+                  aria-label="Back to channels"
+                  className="sm:hidden shrink-0 -ml-1 p-1 text-text-muted hover:text-text-primary transition-colors"
+                >
+                  <ArrowLeft size={16} />
+                </button>
                 <Hash size={15} className="text-text-muted shrink-0" />
                 <h2 className="text-[14px] font-semibold text-text-primary truncate">
                   {activeChannel.name}
@@ -204,12 +260,12 @@ export function OrgChannels({ slug }: { slug: string }) {
             <div
               ref={feedRef}
               onScroll={handleFeedScroll}
-              className="flex-1 overflow-y-auto px-4 py-3 space-y-3"
+              className="flex-1 overflow-y-auto px-4 py-3"
             >
               {messagesLoading ? (
                 <>
                   <Skeleton className="h-10 w-2/3" />
-                  <Skeleton className="h-10 w-1/2" />
+                  <Skeleton className="h-10 w-1/2 mt-3" />
                 </>
               ) : messagesError ? (
                 <ErrorState message="Couldn't load messages." className="py-6" />
@@ -220,26 +276,51 @@ export function OrgChannels({ slug }: { slug: string }) {
                       <Spinner size={16} />
                     </div>
                   )}
-                  {!messages.length ? (
+                  {!renderItems.length ? (
                     <p className="text-[13px] text-text-muted text-center py-10">
                       No messages yet. Say hello!
                     </p>
                   ) : (
-                    messages.map((msg) => {
+                    renderItems.map(({ msg, showDateDivider, showHeader }) => {
                       const authorName = msg.author
                         ? getDisplayName(msg.author.firstName, msg.author.lastName)
                         : "Deleted user";
                       return (
                         <div key={msg.id}>
-                          <div className="flex items-baseline gap-2">
-                            <span className="text-[13px] font-semibold text-text-primary">
-                              {authorName}
-                            </span>
-                            <time className="text-[11px] text-text-muted">
-                              {timeAgo(msg.createdAt)}
-                            </time>
+                          {showDateDivider && (
+                            <div className="flex items-center gap-2 py-2">
+                              <div className="flex-1 h-px bg-border" />
+                              <span className="text-[11px] font-medium text-text-muted shrink-0">
+                                {formatDateDivider(msg.createdAt)}
+                              </span>
+                              <div className="flex-1 h-px bg-border" />
+                            </div>
+                          )}
+                          <div className={cn("flex gap-2.5", showHeader ? "mt-3" : "mt-0.5")}>
+                            {showHeader ? (
+                              <Avatar
+                                firstName={msg.author?.firstName}
+                                lastName={msg.author?.lastName}
+                                size="sm"
+                                className="mt-0.5 shrink-0"
+                              />
+                            ) : (
+                              <div className="w-7 shrink-0" />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              {showHeader && (
+                                <div className="flex items-baseline gap-2">
+                                  <span className="text-[13px] font-semibold text-text-primary">
+                                    {authorName}
+                                  </span>
+                                  <time className="text-[11px] text-text-muted">
+                                    {timeAgo(msg.createdAt)}
+                                  </time>
+                                </div>
+                              )}
+                              <MarkdownContent content={msg.content} />
+                            </div>
                           </div>
-                          <MarkdownContent content={msg.content} />
                         </div>
                       );
                     })

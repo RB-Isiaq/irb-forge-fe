@@ -7,20 +7,21 @@
 
 ## Stack
 
-| Concern       | Technology                            |
-| ------------- | ------------------------------------- |
-| Framework     | Next.js 16 (App Router, Turbopack)    |
-| Language      | TypeScript                            |
-| Styling       | Tailwind CSS v4                       |
-| Server state  | TanStack Query v5                     |
-| Client state  | Zustand                               |
-| Forms         | React Hook Form + Zod                 |
-| HTTP          | Axios (silent 401 token refresh)      |
-| Auth          | JWT (in-memory) + Google OAuth (GIS)  |
-| Notifications | Sonner                                |
-| Icons         | Lucide React                          |
-| Font          | Inter (brand) · JetBrains Mono (code) |
-| Testing       | Vitest + React Testing Library        |
+| Concern       | Technology                                           |
+| ------------- | ---------------------------------------------------- |
+| Framework     | Next.js 16 (App Router, Turbopack)                   |
+| Language      | TypeScript                                           |
+| Styling       | Tailwind CSS v4                                      |
+| Server state  | TanStack Query v5                                    |
+| Client state  | Zustand                                              |
+| Forms         | React Hook Form + Zod                                |
+| HTTP          | Axios (silent 401 token refresh)                     |
+| Auth          | JWT (in-memory) + Google OAuth (GIS)                 |
+| Notifications | Sonner                                               |
+| Icons         | Lucide React                                         |
+| Font          | Inter (brand) · JetBrains Mono (code)                |
+| Testing       | Vitest + React Testing Library                       |
+| Analytics     | Vercel Analytics (page views, zero-config on Vercel) |
 
 ---
 
@@ -49,7 +50,7 @@ shared/     ← Non-domain: design system, HTTP client, utilities
 ### `app/` — Routing + providers
 
 - Next.js App Router file-based routing
-- `_providers/` — `QueryClientProvider`, `AuthProvider`, `GoogleOAuthProvider`, `Toaster`
+- `_providers/` — `QueryClientProvider`, `AuthProvider`, `GoogleOAuthProvider`, `Toaster`, `Analytics`
 - Pages export `metadata` and render **one widget**. No `useQuery`, no schemas.
 
 ### `widgets/` — Composed page sections

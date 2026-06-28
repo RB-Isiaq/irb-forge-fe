@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { extractApiError } from "@/shared/api";
 import { queryKeys } from "@/shared/lib";
 import { programApi } from "../api";
-import type { CreateProgramPayload, UpdateProgramPayload } from "./types";
+import type { CreateProgramPayload, ProgramStatus, UpdateProgramPayload } from "./types";
 
 export function usePrograms(slug: string) {
   return useInfiniteQuery({
@@ -16,6 +16,16 @@ export function usePrograms(slug: string) {
     getNextPageParam: (lastPage) =>
       lastPage.page < lastPage.pages ? lastPage.page + 1 : undefined,
     enabled: !!slug,
+  });
+}
+
+/** Exact count for a single status, via the backend's `?status=` filter — `.total` only, never `.items`. */
+export function useProgramCountByStatus(slug: string, status: ProgramStatus) {
+  return useQuery({
+    queryKey: queryKeys.programs.countByStatus(slug, status),
+    queryFn: () => programApi.countByStatus(slug, status),
+    enabled: !!slug,
+    select: (data) => data.total,
   });
 }
 

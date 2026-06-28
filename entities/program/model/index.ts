@@ -2,6 +2,7 @@ export type { Program, ProgramStatus, CreateProgramPayload, UpdateProgramPayload
 export {
   usePrograms,
   useProgram,
+  useProgramCountByStatus,
   useCreateProgram,
   useUpdateProgram,
   useDeleteProgram,

@@ -4,6 +4,7 @@ import { Megaphone } from "lucide-react";
 import { useMessages } from "@/entities/message";
 import { useMyRole } from "@/entities/member";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { ErrorState } from "@/shared/ui/error-state";
 import { getDisplayName, timeAgo } from "@/shared/lib";
@@ -11,9 +12,20 @@ import { MarkdownContent } from "@/shared/ui/markdown-content";
 import { SendMessageForm } from "@/features/org/send-message/ui/send-message-form";
 
 export function OrgAnnouncements({ slug }: { slug: string }) {
-  const { data: messages, isLoading, isError, refetch } = useMessages(slug);
+  const {
+    data: messagesPages,
+    isLoading,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useMessages(slug);
   const myRole = useMyRole(slug);
   const canPost = myRole === "owner" || myRole === "admin" || myRole === "mentor";
+
+  const items = messagesPages?.pages.flatMap((p) => p.items) ?? [];
+  const total = messagesPages?.pages[0]?.total ?? 0;
 
   if (isLoading)
     return (
@@ -54,7 +66,7 @@ export function OrgAnnouncements({ slug }: { slug: string }) {
         </Card>
       )}
 
-      {!messages?.items.length ? (
+      {!items.length ? (
         <Card>
           <CardContent className="py-16 text-center">
             <Megaphone size={36} className="mx-auto text-text-muted mb-3" strokeWidth={1.5} />
@@ -68,7 +80,7 @@ export function OrgAnnouncements({ slug }: { slug: string }) {
         </Card>
       ) : (
         <div className="space-y-3">
-          {messages.items.map((msg) => {
+          {items.map((msg) => {
             const authorName = msg.author
               ? getDisplayName(msg.author.firstName, msg.author.lastName)
               : "Deleted user";
@@ -86,6 +98,23 @@ export function OrgAnnouncements({ slug }: { slug: string }) {
               </Card>
             );
           })}
+          {total > items.length && (
+            <div className="flex items-center justify-between gap-3 pt-1">
+              <p className="text-[12px] text-text-muted">
+                Showing {items.length} of {total} announcements
+              </p>
+              {hasNextPage && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  loading={isFetchingNextPage}
+                  onClick={() => fetchNextPage()}
+                >
+                  Load more
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

@@ -49,17 +49,26 @@ function StatCard({
 
 export function OrgOverview({ slug }: { slug: string }) {
   const { data: org, isLoading, isError, refetch } = useOrg(slug);
-  const { data: members } = useMembers(slug);
-  const { data: programs } = usePrograms(slug);
-  const { data: messages } = useMessages(slug);
+  const { data: membersPages } = useMembers(slug);
+  const { data: programsPages } = usePrograms(slug);
+  const { data: messagesPages } = useMessages(slug);
   const { data: myEnrollments } = useMyEnrollmentsInOrg(slug);
   const myRole = useMyRole(slug);
 
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
   const isMember = myRole === "member";
 
+  // This widget only ever needs a first-page snapshot for its stat cards/previews —
+  // `usePrograms`/`useMembers`/`useMessages` are infinite queries (for "Load more" UI
+  // elsewhere), so take page 1 here rather than paginating the whole dashboard.
+  const members = membersPages?.pages[0];
+  const programs = programsPages?.pages[0];
+  const messages = messagesPages?.pages[0];
+
   const memberCount = members?.total ?? 0;
   const totalPrograms = programs?.total ?? 0;
+  // Approximate — counts only the first page's worth of programs, same as the rest
+  // of this dashboard's stats. Fine for a glance card; not a precise org-wide total.
   const activePrograms = programs?.items.filter((p) => p.status === "active").length ?? 0;
   const recentMessages = messages?.items.slice(0, 3) ?? [];
   const activeEnrollments = (myEnrollments ?? []).filter((e) => e.status === "active");

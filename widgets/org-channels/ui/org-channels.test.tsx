@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { OrgChannels } from "./org-channels";
 import { useChannelMessages, useChannels } from "@/entities/channel";
@@ -48,6 +48,11 @@ vi.mock("@/entities/member", () => ({
 
 vi.mock("@/entities/user", () => ({
   useAuth: () => ({ user: { id: "u-test" } }),
+  // Mimics the real Avatar's initials-only rendering so it doesn't collide
+  // with the full display name rendered alongside it in message headers.
+  Avatar: ({ firstName, lastName }: { firstName?: string | null; lastName?: string | null }) => (
+    <span aria-hidden="true">{`${firstName?.[0] ?? ""}${lastName?.[0] ?? ""}`}</span>
+  ),
 }));
 
 vi.mock("@/entities/subscription", () => ({
@@ -70,6 +75,10 @@ function mockMessages(overrides: Partial<UseChannelMessagesResult> = {}) {
 }
 
 describe("OrgChannels", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   beforeEach(() => {
     refetch.mockClear();
     fetchNextPage.mockClear();
@@ -154,5 +163,59 @@ describe("OrgChannels", () => {
     fireEvent.scroll(scrollable, { target: { scrollTop: 0 } });
 
     expect(fetchNextPage).not.toHaveBeenCalled();
+  });
+
+  it("groups consecutive same-author messages under one header and divides days apart", () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-06-28T12:00:00.000Z"));
+
+    mockMessages({
+      data: {
+        pages: [
+          {
+            items: [
+              {
+                id: "m3",
+                channelId: "2",
+                authorId: "u1",
+                content: "third",
+                createdAt: "2026-06-28T10:01:00.000Z",
+                updatedAt: "2026-06-28T10:01:00.000Z",
+                author: { id: "u1", firstName: "Ada", lastName: "Lovelace" },
+              },
+              {
+                id: "m2",
+                channelId: "2",
+                authorId: "u1",
+                content: "second",
+                createdAt: "2026-06-28T10:00:30.000Z",
+                updatedAt: "2026-06-28T10:00:30.000Z",
+                author: { id: "u1", firstName: "Ada", lastName: "Lovelace" },
+              },
+              {
+                id: "m1",
+                channelId: "2",
+                authorId: "u2",
+                content: "first, yesterday",
+                createdAt: "2026-06-27T09:00:00.000Z",
+                updatedAt: "2026-06-27T09:00:00.000Z",
+                author: { id: "u2", firstName: "Bob", lastName: null },
+              },
+            ],
+            nextCursor: null,
+          },
+        ],
+        pageParams: [undefined],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any,
+    });
+    render(<OrgChannels slug="acme" />);
+    fireEvent.click(screen.getByRole("button", { name: /random/i }));
+
+    expect(screen.getByText("Yesterday")).toBeInTheDocument();
+    expect(screen.getByText("Today")).toBeInTheDocument();
+    // The two same-author, close-in-time messages collapse into a single header.
+    expect(screen.getAllByText("Ada Lovelace")).toHaveLength(1);
+    expect(screen.getByText("Bob")).toBeInTheDocument();
   });
 });

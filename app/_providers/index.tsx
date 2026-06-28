@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { Toaster } from "sonner";
 import { AuthProvider } from "./auth-provider";
+import { Analytics } from "@vercel/analytics/next";
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? "";
 
@@ -35,6 +36,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           richColors
           toastOptions={{ style: { fontFamily: "var(--font-inter)" } }}
         />
+        <Analytics />
         {process.env.NODE_ENV === "development" && <ReactQueryDevtools initialIsOpen={false} />}
       </QueryClientProvider>
     </GoogleOAuthProvider>

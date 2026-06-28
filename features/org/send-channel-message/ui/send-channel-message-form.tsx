@@ -34,6 +34,10 @@ export function SendChannelMessageForm({ slug, channelId }: SendChannelMessageFo
   const sendMessage = useSendChannelMessage(slug, channelId);
   const [tab, setTab] = useState<"write" | "preview">("write");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // `sendMessage.isPending` only flips after a re-render, which isn't fast enough to
+  // stop a second Enter press fired in the same tick (e.g. mashing Enter on a slow
+  // network) — this ref blocks synchronously, before React even gets a chance to render.
+  const isSendingRef = useRef(false);
 
   const {
     register,
@@ -58,23 +62,41 @@ export function SendChannelMessageForm({ slug, channelId }: SendChannelMessageFo
   }
 
   function onSubmit(data: FormData) {
+    if (isSendingRef.current) return;
+    isSendingRef.current = true;
     sendMessage.mutate(data, {
       onSuccess: () => {
         reset();
         setTab("write");
       },
+      onSettled: () => {
+        isSendingRef.current = false;
+      },
     });
+  }
+
+  // `handleSubmit(onSubmit)` must be called from inside an event handler, not
+  // inline in JSX — calling it during render trips the refs-during-render check,
+  // since `onSubmit` reads `isSendingRef.current`.
+  function submitForm() {
+    void handleSubmit(onSubmit)();
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      void handleSubmit(onSubmit)();
+      if (isSendingRef.current) return;
+      submitForm();
     }
   }
 
+  function onFormSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    submitForm();
+  }
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-2">
+    <form onSubmit={onFormSubmit} className="space-y-2">
       {/* Tab bar */}
       <div className="flex gap-1 border-b border-border">
         {(["write", "preview"] as const).map((t) => (

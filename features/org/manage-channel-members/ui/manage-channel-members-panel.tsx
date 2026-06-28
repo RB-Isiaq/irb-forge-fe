@@ -33,7 +33,13 @@ export function ManageChannelMembersPanel({
     channelId,
     open
   );
-  const { data: orgMembers, isLoading: orgMembersLoading } = useMembers(slug);
+  const {
+    data: orgMembersPages,
+    isLoading: orgMembersLoading,
+    hasNextPage: orgMembersHasNextPage,
+    isFetchingNextPage: orgMembersFetchingNextPage,
+    fetchNextPage: fetchNextOrgMembersPage,
+  } = useMembers(slug);
   const addMember = useAddChannelMember(slug, channelId ?? "");
   const removeMember = useRemoveChannelMember(slug, channelId ?? "");
   const [pendingUserId, setPendingUserId] = useState<string | null>(null);
@@ -47,10 +53,20 @@ export function ManageChannelMembersPanel({
     return () => document.removeEventListener("keydown", handler);
   }, [open, onOpenChange]);
 
+  // The "candidates" list needs every org member, not just the first page —
+  // keep pulling pages until there's nothing left, rather than surfacing a
+  // second "Load more" inside this picker.
+  useEffect(() => {
+    if (open && orgMembersHasNextPage && !orgMembersFetchingNextPage) {
+      fetchNextOrgMembersPage();
+    }
+  }, [open, orgMembersHasNextPage, orgMembersFetchingNextPage, fetchNextOrgMembersPage]);
+
   if (!open || !channel) return null;
 
+  const orgMembers = orgMembersPages?.pages.flatMap((p) => p.items) ?? [];
   const memberIds = new Set((channelMembers ?? []).map((m) => m.userId));
-  const candidates = (orgMembers?.items ?? []).filter((m) => !memberIds.has(m.userId));
+  const candidates = orgMembers.filter((m) => !memberIds.has(m.userId));
 
   function handleAdd(userId: string) {
     setPendingUserId(userId);
@@ -131,7 +147,7 @@ export function ManageChannelMembersPanel({
             <h3 className="text-[12px] font-semibold text-text-muted uppercase tracking-wide mb-2">
               Add members
             </h3>
-            {orgMembersLoading ? (
+            {orgMembersLoading || orgMembersHasNextPage ? (
               <Spinner size={18} />
             ) : candidates.length === 0 ? (
               <p className="text-[13px] text-text-muted">

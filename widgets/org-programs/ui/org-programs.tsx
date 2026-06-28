@@ -80,19 +80,34 @@ function ProgramCard({
 
 export function OrgPrograms({ slug }: { slug: string }) {
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const { data: programs, isLoading, isError, refetch } = usePrograms(slug);
+  const {
+    data: programsPages,
+    isLoading,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = usePrograms(slug);
   const { data: myEnrollments } = useMyEnrollmentsInOrg(slug);
   const myRole = useMyRole(slug);
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
   const isMember = myRole === "member";
 
-  const programItems = useMemo(() => programs?.items ?? [], [programs?.items]);
+  const programItems = useMemo(
+    () => programsPages?.pages.flatMap((p) => p.items) ?? [],
+    [programsPages]
+  );
+  const totalPrograms = programsPages?.pages[0]?.total ?? 0;
 
   const enrollmentMap = useMemo(
     () => Object.fromEntries((myEnrollments ?? []).map((e) => [e.programId, e.status])),
     [myEnrollments]
   );
 
+  // Cross-references the loaded program pages, so an enrollment in a program
+  // beyond the first page or two won't surface here until "Load more" reaches it.
+  // Acceptable for now — same approximation as the dashboard's program stats.
   const myPrograms = useMemo(
     () => programItems.filter((p) => enrollmentMap[p.id]),
     [programItems, enrollmentMap]
@@ -204,10 +219,22 @@ export function OrgPrograms({ slug }: { slug: string }) {
               myEnrollmentStatus={enrollmentMap[program.id]}
             />
           ))}
-          {programs && programs.total > programItems.length && (
-            <p className="text-[12px] text-text-muted text-center pt-1">
-              Showing {programItems.length} of {programs.total} programs
-            </p>
+          {totalPrograms > programItems.length && (
+            <div className="flex items-center justify-between gap-3 pt-1">
+              <p className="text-[12px] text-text-muted">
+                Showing {programItems.length} of {totalPrograms} programs
+              </p>
+              {hasNextPage && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  loading={isFetchingNextPage}
+                  onClick={() => fetchNextPage()}
+                >
+                  Load more
+                </Button>
+              )}
+            </div>
           )}
         </div>
       )}

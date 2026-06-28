@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { Badge } from "@/shared/ui/badge";
+import { Button } from "@/shared/ui/button";
 import { Skeleton } from "@/shared/ui/skeleton";
 import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
 import { ErrorState } from "@/shared/ui/error-state";
@@ -31,7 +32,15 @@ const ROLE_OPTIONS: Array<{ value: Exclude<OrgRole, "owner">; label: string }> =
 
 export function MembersList({ slug }: { slug: string }) {
   const [removeTarget, setRemoveTarget] = useState<{ id: string; name: string } | null>(null);
-  const { data: members, isLoading, isError, refetch } = useMembers(slug);
+  const {
+    data: membersPages,
+    isLoading,
+    isError,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useMembers(slug);
   const { data: myMembership } = useMyMembership(slug);
   const updateRole = useUpdateMemberRole(slug);
   const remove = useRemoveMember(slug);
@@ -68,15 +77,16 @@ export function MembersList({ slug }: { slug: string }) {
     );
   }
 
-  if (!members?.items.length) {
+  const items = membersPages?.pages.flatMap((p) => p.items) ?? [];
+  const total = membersPages?.pages[0]?.total ?? 0;
+
+  if (!items.length) {
     return (
       <div className="rounded-xl border border-border bg-surface px-6 py-12 text-center">
         <p className="text-[14px] text-text-muted">No members yet.</p>
       </div>
     );
   }
-
-  const items = members.items;
 
   return (
     <div className="rounded-xl border border-border bg-surface overflow-hidden">
@@ -139,11 +149,21 @@ export function MembersList({ slug }: { slug: string }) {
           </div>
         );
       })}
-      {members.total > items.length && (
-        <div className="px-5 py-3 border-t border-border">
+      {total > items.length && (
+        <div className="px-5 py-3 border-t border-border flex items-center justify-between gap-3">
           <p className="text-[12px] text-text-muted">
-            Showing {items.length} of {members.total} members
+            Showing {items.length} of {total} members
           </p>
+          {hasNextPage && (
+            <Button
+              size="sm"
+              variant="secondary"
+              loading={isFetchingNextPage}
+              onClick={() => fetchNextPage()}
+            >
+              Load more
+            </Button>
+          )}
         </div>
       )}
 

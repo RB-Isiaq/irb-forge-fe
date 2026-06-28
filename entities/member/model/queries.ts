@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { extractApiError } from "@/shared/api";
 import { queryKeys } from "@/shared/lib";
@@ -8,9 +8,12 @@ import { memberApi } from "../api";
 import type { OrgRole, UpdateMemberRolePayload, MyMembership } from "./types";
 
 export function useMembers(slug: string) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: queryKeys.members.list(slug),
-    queryFn: () => memberApi.list(slug),
+    queryFn: ({ pageParam }) => memberApi.list(slug, pageParam, 20),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.pages ? lastPage.page + 1 : undefined,
     enabled: !!slug,
   });
 }

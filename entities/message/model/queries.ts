@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { extractApiError } from "@/shared/api";
 import { queryKeys } from "@/shared/lib";
@@ -8,9 +8,12 @@ import { messageApi } from "../api";
 import type { SendMessagePayload } from "./types";
 
 export function useMessages(slug: string) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: queryKeys.messages.byOrg(slug),
-    queryFn: () => messageApi.list(slug),
+    queryFn: ({ pageParam }) => messageApi.list(slug, pageParam, 20),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.pages ? lastPage.page + 1 : undefined,
     enabled: !!slug,
     refetchInterval: 30_000,
     refetchOnWindowFocus: true,

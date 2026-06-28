@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { extractApiError } from "@/shared/api";
@@ -9,9 +9,12 @@ import { programApi } from "../api";
 import type { CreateProgramPayload, UpdateProgramPayload } from "./types";
 
 export function usePrograms(slug: string) {
-  return useQuery({
+  return useInfiniteQuery({
     queryKey: queryKeys.programs.list(slug),
-    queryFn: () => programApi.list(slug),
+    queryFn: ({ pageParam }) => programApi.list(slug, pageParam, 20),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.pages ? lastPage.page + 1 : undefined,
     enabled: !!slug,
   });
 }

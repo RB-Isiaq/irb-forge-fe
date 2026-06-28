@@ -61,42 +61,55 @@ describe("ManageChannelMembersPanel", () => {
 
     vi.mocked(useMembers).mockReturnValue({
       isLoading: false,
+      hasNextPage: false,
+      isFetchingNextPage: false,
+      fetchNextPage: vi.fn(),
       data: {
-        items: [
+        pages: [
           {
-            id: "m1",
-            userId: "u-self",
-            organizationId: "o1",
-            role: "owner",
-            joinedAt: "2026-01-01",
-            user: { id: "u-self", email: "me@acme.com", firstName: "Me", lastName: null },
-          },
-          {
-            id: "m2",
-            userId: "u-other",
-            organizationId: "o1",
-            role: "member",
-            joinedAt: "2026-01-01",
-            user: { id: "u-other", email: "other@acme.com", firstName: "Other", lastName: null },
-          },
-          {
-            id: "m3",
-            userId: "u-candidate",
-            organizationId: "o1",
-            role: "member",
-            joinedAt: "2026-01-01",
-            user: {
-              id: "u-candidate",
-              email: "candidate@acme.com",
-              firstName: "Candidate",
-              lastName: null,
-            },
+            items: [
+              {
+                id: "m1",
+                userId: "u-self",
+                organizationId: "o1",
+                role: "owner",
+                joinedAt: "2026-01-01",
+                user: { id: "u-self", email: "me@acme.com", firstName: "Me", lastName: null },
+              },
+              {
+                id: "m2",
+                userId: "u-other",
+                organizationId: "o1",
+                role: "member",
+                joinedAt: "2026-01-01",
+                user: {
+                  id: "u-other",
+                  email: "other@acme.com",
+                  firstName: "Other",
+                  lastName: null,
+                },
+              },
+              {
+                id: "m3",
+                userId: "u-candidate",
+                organizationId: "o1",
+                role: "member",
+                joinedAt: "2026-01-01",
+                user: {
+                  id: "u-candidate",
+                  email: "candidate@acme.com",
+                  firstName: "Candidate",
+                  lastName: null,
+                },
+              },
+            ],
+            total: 3,
+            page: 1,
+            limit: 20,
+            pages: 1,
           },
         ],
-        total: 3,
-        page: 1,
-        limit: 20,
-        pages: 1,
+        pageParams: [1],
       },
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any);

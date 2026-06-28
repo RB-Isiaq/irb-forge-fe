@@ -29,12 +29,20 @@ function formatDate(iso: string | null) {
   });
 }
 
+// Accepts either a full `Program` (the paginated list) or the lighter shape
+// `Enrollment.program` embeds (everything but `capacity`, which the card
+// already renders conditionally — so omitting it just hides that one line).
+type ProgramCardData = Pick<
+  Program,
+  "id" | "name" | "description" | "status" | "startDate" | "endDate"
+> & { capacity?: Program["capacity"] };
+
 function ProgramCard({
   program,
   slug,
   myEnrollmentStatus,
 }: {
-  program: Program;
+  program: ProgramCardData;
   slug: string;
   myEnrollmentStatus?: string | null;
 }) {
@@ -105,12 +113,12 @@ export function OrgPrograms({ slug }: { slug: string }) {
     [myEnrollments]
   );
 
-  // Cross-references the loaded program pages, so an enrollment in a program
-  // beyond the first page or two won't surface here until "Load more" reaches it.
-  // Acceptable for now — same approximation as the dashboard's program stats.
+  // Sourced from the member's own (small, never-paginated) enrollment list rather
+  // than the paginated program pages — so it's always complete regardless of how
+  // many "All programs" pages have been loaded.
   const myPrograms = useMemo(
-    () => programItems.filter((p) => enrollmentMap[p.id]),
-    [programItems, enrollmentMap]
+    () => (myEnrollments ?? []).filter((e) => e.program).map((e) => e.program as ProgramCardData),
+    [myEnrollments]
   );
 
   if (isLoading) {

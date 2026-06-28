@@ -36,6 +36,8 @@ export const queryKeys = {
   programs: {
     list: (slug: string) => ["orgs", slug, "programs"] as const,
     detail: (slug: string, id: string) => ["orgs", slug, "programs", id] as const,
+    countByStatus: (slug: string, status: string) =>
+      ["orgs", slug, "programs", "count", status] as const,
   },
 
   /* ─── Enrollments ────────────────────────────────── */

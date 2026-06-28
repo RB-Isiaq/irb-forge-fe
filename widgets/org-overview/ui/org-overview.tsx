@@ -5,7 +5,7 @@ import type { LucideIcon } from "lucide-react";
 import { Users, BookOpen, Megaphone, ArrowRight } from "lucide-react";
 import { useOrg } from "@/entities/org";
 import { useMembers, useMyRole } from "@/entities/member";
-import { usePrograms } from "@/entities/program";
+import { usePrograms, useProgramCountByStatus } from "@/entities/program";
 import { useMessages } from "@/entities/message";
 import { useMyEnrollmentsInOrg } from "@/entities/enrollment";
 import { Card, CardContent } from "@/shared/ui/card";
@@ -53,6 +53,7 @@ export function OrgOverview({ slug }: { slug: string }) {
   const { data: programsPages } = usePrograms(slug);
   const { data: messagesPages } = useMessages(slug);
   const { data: myEnrollments } = useMyEnrollmentsInOrg(slug);
+  const { data: activeProgramCount } = useProgramCountByStatus(slug, "active");
   const myRole = useMyRole(slug);
 
   const canManage = myRole === "owner" || myRole === "admin" || myRole === "mentor";
@@ -67,9 +68,7 @@ export function OrgOverview({ slug }: { slug: string }) {
 
   const memberCount = members?.total ?? 0;
   const totalPrograms = programs?.total ?? 0;
-  // Approximate — counts only the first page's worth of programs, same as the rest
-  // of this dashboard's stats. Fine for a glance card; not a precise org-wide total.
-  const activePrograms = programs?.items.filter((p) => p.status === "active").length ?? 0;
+  const activePrograms = activeProgramCount ?? 0;
   const recentMessages = messages?.items.slice(0, 3) ?? [];
   const activeEnrollments = (myEnrollments ?? []).filter((e) => e.status === "active");
 

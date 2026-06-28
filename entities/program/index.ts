@@ -7,6 +7,7 @@ export type {
 export {
   usePrograms,
   useProgram,
+  useProgramCountByStatus,
   useCreateProgram,
   useUpdateProgram,
   useDeleteProgram,

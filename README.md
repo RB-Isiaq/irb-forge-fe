@@ -106,7 +106,7 @@ Each entity slice owns its **types**, **API calls**, and **React Query hooks**. 
 | `org/`          | `useOrg`, `useOrgs`, `useCreateOrg`, `useUpdateOrg`, `useDeleteOrg`                                                                                                                           |
 | `member/`       | `useMembers`, `useMyMembership`, `useMyRole`, `useUpdateMemberRole`, `useRemoveMember`                                                                                                        |
 | `invitation/`   | `useOrgInvitations`, `useMyInvitations`, `useAcceptInvitation`, `useSendInvitation`, `useResendInvitation`                                                                                    |
-| `program/`      | `usePrograms`, `useProgram`, `useCreateProgram`, `useUpdateProgram`, `useDeleteProgram`                                                                                                       |
+| `program/`      | `usePrograms`, `useProgram`, `useProgramCountByStatus`, `useCreateProgram`, `useUpdateProgram`, `useDeleteProgram`                                                                            |
 | `enrollment/`   | `useEnrollments`, `useMyEnrollment`, `useMyEnrollmentsInOrg`, `useEnroll`, `useDropEnrollment`, `useUpdateEnrollmentStatus`                                                                   |
 | `message/`      | `useMessages`, `useSendMessage`                                                                                                                                                               |
 | `channel/`      | `useChannels`, `useCreateChannel`, `useDeleteChannel`, `useChannelMessages` (cursor-paginated), `useSendChannelMessage`, `useChannelMembers`, `useAddChannelMember`, `useRemoveChannelMember` |
@@ -211,11 +211,8 @@ const canManage = myRole === "owner" || myRole === "admin";
 - **Programs + Enrollments + Messages** — Full CRUD with role-gated actions, enrollment flow, announcements
 - **Billing** — Stripe checkout, plan + payment history, cancel subscription (owner-only), wired end-to-end against the real backend
 - **Channels** — Org-scoped group chat (Free: 1 channel, Pro: unlimited), markdown messages with live preview, infinite-scroll history, member management (add/remove)
+- **Pagination** — `members`, `programs`, and `messages` (org-wide announcements) now use `page`/`limit` with a "Load more" control, same convention `payments` already used; channel messages use cursor pagination (`before`/`nextCursor`) with infinite-scroll-up. The org-overview dashboard's "active programs" stat uses a dedicated `?status=active&limit=1` request (`useProgramCountByStatus`) rather than approximating from a loaded page. (Invitations and the channels list are unpaginated by design — both are inherently small, bounded lists.)
 - **Companion mobile app** ([`irb-forge-mobile`](https://github.com/RB-Isiaq/irb-forge-mobile)) — same backend, native UI, Android APK available via GitHub releases
-
-### 🔲 Known gaps
-
-- **Pagination** — most list endpoints (programs, members, org-wide announcements) still return everything. `/payments` uses `page`/`limit`; channel messages use cursor pagination (`before`/`nextCursor`, with infinite-scroll-up in the UI) — these two are the only paginated lists so far
 
 ---
 

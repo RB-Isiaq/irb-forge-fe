@@ -20,7 +20,13 @@ import { Spinner } from "@/shared/ui/spinner";
 import { ConfirmDialog } from "@/shared/ui/confirm-dialog";
 import { ErrorState } from "@/shared/ui/error-state";
 import { MarkdownContent } from "@/shared/ui/markdown-content";
-import { cn, formatDateDivider, getDisplayName, timeAgo } from "@/shared/lib";
+import {
+  cn,
+  formatDateDivider,
+  formatMessageTime,
+  getAvatarColorClass,
+  getDisplayName,
+} from "@/shared/lib";
 
 const NEAR_TOP_PX = 80;
 const GROUP_GAP_MS = 5 * 60_000;
@@ -112,7 +118,9 @@ export function OrgChannels({ slug }: { slug: string }) {
     if (el) el.scrollTop = el.scrollHeight;
   }, [activeChannelId]);
 
-  // New message appended (and user was already at the bottom) → follow it down.
+  // New message appended → follow it down if the user was already at the bottom,
+  // OR unconditionally if it's the current user's own message (sending one should
+  // always land you on it, regardless of where the feed happened to be scrolled).
   // Older page prepended (scrolled-to-top "load more") → hold the visual position.
   useLayoutEffect(() => {
     const el = feedRef.current;
@@ -120,10 +128,29 @@ export function OrgChannels({ slug }: { slug: string }) {
     if (isPrependingRef.current) {
       el.scrollTop = el.scrollHeight - prevScrollHeightRef.current + el.scrollTop;
       isPrependingRef.current = false;
-    } else if (isNearBottomRef.current) {
+      return;
+    }
+    const lastMessage = messages[messages.length - 1];
+    const isOwnNewMessage = !!lastMessage && !!user && lastMessage.authorId === user.id;
+    if (isNearBottomRef.current || isOwnNewMessage) {
+      isNearBottomRef.current = true;
       el.scrollTop = el.scrollHeight;
     }
-  }, [messages.length]);
+  }, [messages, user]);
+
+  // Mobile: the virtual keyboard resizes the visual viewport without firing a
+  // scroll event on the feed itself — without this, "near bottom" can go stale
+  // the moment the keyboard opens, leaving the latest message half-hidden.
+  useLayoutEffect(() => {
+    const vv = window.visualViewport;
+    if (!vv) return;
+    function onViewportResize() {
+      const el = feedRef.current;
+      if (el && isNearBottomRef.current) el.scrollTop = el.scrollHeight;
+    }
+    vv.addEventListener("resize", onViewportResize);
+    return () => vv.removeEventListener("resize", onViewportResize);
+  }, []);
 
   function handleFeedScroll(e: React.UIEvent<HTMLDivElement>) {
     const el = e.currentTarget;
@@ -285,6 +312,7 @@ export function OrgChannels({ slug }: { slug: string }) {
                       const authorName = msg.author
                         ? getDisplayName(msg.author.firstName, msg.author.lastName)
                         : "Deleted user";
+                      const avatarColor = getAvatarColorClass(msg.authorId ?? msg.id);
                       return (
                         <div key={msg.id}>
                           {showDateDivider && (
@@ -302,7 +330,7 @@ export function OrgChannels({ slug }: { slug: string }) {
                                 firstName={msg.author?.firstName}
                                 lastName={msg.author?.lastName}
                                 size="sm"
-                                className="mt-0.5 shrink-0"
+                                className={cn("mt-0.5 shrink-0", avatarColor)}
                               />
                             ) : (
                               <div className="w-7 shrink-0" />
@@ -314,7 +342,7 @@ export function OrgChannels({ slug }: { slug: string }) {
                                     {authorName}
                                   </span>
                                   <time className="text-[11px] text-text-muted">
-                                    {timeAgo(msg.createdAt)}
+                                    {formatMessageTime(msg.createdAt)}
                                   </time>
                                 </div>
                               )}

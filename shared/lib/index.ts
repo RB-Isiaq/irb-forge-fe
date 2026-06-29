@@ -3,6 +3,8 @@ export {
   getInitials,
   getDisplayName,
   formatDateDivider,
+  formatMessageTime,
+  getAvatarColorClass,
   slugify,
   stripMarkdown,
   timeAgo,
@@ -10,3 +12,4 @@ export {
 export { queryKeys } from "./query-keys";
 export { setSessionCookie } from "./session";
 export type { PaginatedData } from "./types";
+export { useMediaQuery } from "./use-media-query";

@@ -56,26 +56,17 @@ export function formatMessageTime(iso: string): string {
   });
 }
 
-// 8 colors distributed across the hue wheel at roughly 40–60° intervals.
-// /25 opacity gives a visible tint without overpowering the surrounding UI.
-// fuchsia (~295°) replaces pink (~330°) to widen the gap from rose (~0°) and
-// violet (~262°), which were visually indistinguishable at the previous /15 opacity.
-const AVATAR_PALETTE = [
-  "bg-rose-500/25 text-rose-600",
-  "bg-amber-500/25 text-amber-600",
-  "bg-emerald-500/25 text-emerald-600",
-  "bg-teal-500/25 text-teal-600",
-  "bg-sky-500/25 text-sky-600",
-  "bg-violet-500/25 text-violet-600",
-  "bg-fuchsia-500/25 text-fuchsia-600",
-  "bg-orange-500/25 text-orange-600",
-];
+function avatarHash(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
 
-/** Deterministic avatar color from a stable seed (e.g. user id) — so distinct people read as distinct at a glance. */
-export function getAvatarColorClass(seed: string): string {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) | 0;
-  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
+/** Deterministic background color for an avatar from a stable seed (e.g. user id).
+ *  Spans ~360 distinct hues so different users almost never share a color,
+ *  with fixed saturation/lightness so every shade is vivid yet readable under white text. */
+export function getAvatarColor(seed: string): string {
+  return `hsl(${avatarHash(seed) % 360}, 52%, 42%)`;
 }
 
 /** Strips common markdown syntax for use in plain-text previews (e.g. recent-activity lists). */

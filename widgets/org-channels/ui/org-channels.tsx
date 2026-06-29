@@ -24,7 +24,7 @@ import {
   cn,
   formatDateDivider,
   formatMessageTime,
-  getAvatarColorClass,
+  getAvatarColor,
   getDisplayName,
 } from "@/shared/lib";
 
@@ -312,7 +312,7 @@ export function OrgChannels({ slug }: { slug: string }) {
                       const authorName = msg.author
                         ? getDisplayName(msg.author.firstName, msg.author.lastName)
                         : "Deleted user";
-                      const avatarColor = getAvatarColorClass(msg.authorId ?? msg.id);
+                      const avatarColor = getAvatarColor(msg.authorId ?? msg.id);
                       return (
                         <div key={msg.id}>
                           {showDateDivider && (
@@ -330,7 +330,8 @@ export function OrgChannels({ slug }: { slug: string }) {
                                 firstName={msg.author?.firstName}
                                 lastName={msg.author?.lastName}
                                 size="sm"
-                                className={cn("mt-0.5 shrink-0", avatarColor)}
+                                className="mt-0.5 shrink-0 text-white"
+                                style={{ backgroundColor: avatarColor }}
                               />
                             ) : (
                               <div className="w-7 shrink-0" />

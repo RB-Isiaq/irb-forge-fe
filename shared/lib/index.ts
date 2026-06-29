@@ -4,7 +4,7 @@ export {
   getDisplayName,
   formatDateDivider,
   formatMessageTime,
-  getAvatarColorClass,
+  getAvatarColor,
   slugify,
   stripMarkdown,
   timeAgo,

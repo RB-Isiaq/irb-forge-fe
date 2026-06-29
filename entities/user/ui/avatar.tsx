@@ -5,6 +5,7 @@ interface AvatarProps {
   lastName: string | null | undefined;
   size?: "sm" | "md" | "lg";
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const sizeClasses = {
@@ -13,7 +14,7 @@ const sizeClasses = {
   lg: "h-11 w-11 text-[15px]",
 };
 
-export function Avatar({ firstName, lastName, size = "md", className }: AvatarProps) {
+export function Avatar({ firstName, lastName, size = "md", className, style }: AvatarProps) {
   return (
     <span
       className={cn(
@@ -22,6 +23,7 @@ export function Avatar({ firstName, lastName, size = "md", className }: AvatarPr
         sizeClasses[size],
         className
       )}
+      style={style}
       aria-hidden="true"
     >
       {getInitials(firstName, lastName)}

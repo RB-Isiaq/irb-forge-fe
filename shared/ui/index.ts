@@ -11,3 +11,5 @@ export { FormField } from "./form-field";
 export { Textarea } from "./textarea";
 export { DatePicker } from "./date-picker";
 export { ErrorState } from "./error-state";
+export { EmojiPickerButton } from "./emoji-picker";
+export type { EmojiPickerButtonProps } from "./emoji-picker";

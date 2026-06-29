@@ -3,6 +3,8 @@ export {
   getInitials,
   getDisplayName,
   formatDateDivider,
+  formatMessageTime,
+  getAvatarColorClass,
   slugify,
   stripMarkdown,
   timeAgo,

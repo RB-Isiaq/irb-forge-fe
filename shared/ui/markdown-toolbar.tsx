@@ -89,7 +89,7 @@ function ToolBtn({
       title={label}
       aria-label={label}
       onClick={onClick}
-      className="p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-border transition-colors"
+      className="shrink-0 p-1.5 rounded-md text-text-muted hover:text-text-primary hover:bg-border transition-colors"
     >
       {children}
     </button>
@@ -98,7 +98,7 @@ function ToolBtn({
 
 export function MarkdownToolbar({ onTool }: { onTool: (name: MarkdownToolName) => void }) {
   return (
-    <div className="flex items-center flex-wrap gap-0.5 px-2 py-1.5 border-b border-border bg-bg">
+    <div className="flex items-center flex-nowrap gap-0.5 px-2 py-1.5 border-b border-border bg-bg overflow-x-auto">
       <ToolBtn label="Heading" onClick={() => onTool("heading")}>
         <Heading2 size={15} />
       </ToolBtn>
@@ -118,7 +118,7 @@ export function MarkdownToolbar({ onTool }: { onTool: (name: MarkdownToolName) =
         <Link size={15} />
       </ToolBtn>
 
-      <div className="w-px h-4 bg-border mx-1" />
+      <div className="w-px h-4 bg-border mx-1 shrink-0" />
 
       <ToolBtn label="Ordered list" onClick={() => onTool("orderedList")}>
         <ListOrdered size={15} />

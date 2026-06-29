@@ -90,6 +90,14 @@ export function SendChannelMessageForm({ slug, channelId }: SendChannelMessageFo
     }
   }
 
+  // Mobile: bring the composer above the virtual keyboard once it opens, rather
+  // than relying on the browser's own (inconsistent, especially inside a nested
+  // scroll container) heuristics for scrolling a focused input into view.
+  function onFocus(e: React.FocusEvent<HTMLTextAreaElement>) {
+    // jsdom doesn't implement scrollIntoView — guard so tests don't crash on focus.
+    e.currentTarget.scrollIntoView?.({ block: "end", behavior: "smooth" });
+  }
+
   function onFormSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     submitForm();
@@ -118,13 +126,18 @@ export function SendChannelMessageForm({ slug, channelId }: SendChannelMessageFo
 
       {tab === "write" ? (
         <div className="flex items-end gap-2">
-          <div className="flex-1 rounded-md border border-border overflow-hidden focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 transition-colors">
+          {/* `min-w-0` overrides flexbox's default min-width:auto — without it, the
+              toolbar's intrinsic (now non-wrapping) content width keeps this wrapper
+              from ever shrinking to fit, leaving it visibly narrower than its flex-1
+              share and the send button looking like it has extra space beside it. */}
+          <div className="flex-1 min-w-0 rounded-md border border-border overflow-hidden focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/15 transition-colors">
             <MarkdownToolbar onTool={tool} />
             <Textarea
               rows={2}
               placeholder="Message this channel… Markdown is supported."
               error={!!errors.content}
               onKeyDown={onKeyDown}
+              onFocus={onFocus}
               ref={(el) => {
                 registerRef(el);
                 (textareaRef as React.RefObject<HTMLTextAreaElement | null>).current = el;

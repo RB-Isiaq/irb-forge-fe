@@ -47,6 +47,33 @@ export function formatDateDivider(iso: string): string {
   return date.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
 }
 
+/** 12-hour clock time (e.g. "1:50 PM") — for per-message timestamps in a chat feed. */
+export function formatMessageTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+}
+
+const AVATAR_PALETTE = [
+  "bg-rose-500/15 text-rose-600",
+  "bg-amber-500/15 text-amber-600",
+  "bg-emerald-500/15 text-emerald-600",
+  "bg-sky-500/15 text-sky-600",
+  "bg-violet-500/15 text-violet-600",
+  "bg-pink-500/15 text-pink-600",
+  "bg-teal-500/15 text-teal-600",
+  "bg-orange-500/15 text-orange-600",
+];
+
+/** Deterministic avatar color from a stable seed (e.g. user id) — so distinct people read as distinct at a glance. */
+export function getAvatarColorClass(seed: string): string {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) | 0;
+  return AVATAR_PALETTE[Math.abs(hash) % AVATAR_PALETTE.length];
+}
+
 /** Strips common markdown syntax for use in plain-text previews (e.g. recent-activity lists). */
 export function stripMarkdown(markdown: string): string {
   return markdown

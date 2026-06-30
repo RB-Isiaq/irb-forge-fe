@@ -187,6 +187,7 @@ export function OrgChannels({ slug }: { slug: string }) {
           {channels?.map((channel) => (
             <button
               key={channel.id}
+              type="button"
               onClick={() => selectChannel(channel.id)}
               className={cn(
                 "group w-full flex items-center gap-1.5 rounded-[7px] px-2.5 py-2 text-[13px] font-medium text-left transition-colors",
@@ -214,7 +215,11 @@ export function OrgChannels({ slug }: { slug: string }) {
         {canCreateChannel && (
           <div className="mt-2 pt-2 border-t border-border">
             {showCreateForm ? (
-              <CreateChannelForm slug={slug} onSuccess={() => setShowCreateForm(false)} />
+              <CreateChannelForm
+                slug={slug}
+                onSuccess={() => setShowCreateForm(false)}
+                onCancel={() => setShowCreateForm(false)}
+              />
             ) : atFreeLimit ? (
               <a
                 href={`/orgs/${slug}/billing`}
@@ -225,6 +230,7 @@ export function OrgChannels({ slug }: { slug: string }) {
               </a>
             ) : (
               <button
+                type="button"
                 onClick={() => setShowCreateForm(true)}
                 className="w-full flex items-center gap-1.5 rounded-[7px] px-2.5 py-2 text-[13px] font-medium text-text-muted hover:bg-gray-100 hover:text-text-primary dark:hover:bg-white/5 transition-colors"
               >
